@@ -1,0 +1,26 @@
+﻿@model IEnumerable<GameSession>
+
+@{
+    ViewBag.Title = "Index GameSessions";
+}
+
+<h1>Available Game Sessions</h1>
+<div ng-controller="GameSessionsController">
+
+        <ul>
+            <li ng-repeat="session in gameSessions">
+                <h2>{{session.date}}</h2>
+            </li>
+        </ul>
+        
+        <button ng-click="create()">Game Session erstellen</button>
+
+</div>
+
+@section scripts
+{
+    <script type="text/javascript" src="/js/api.gurps.angular.js"></script>
+    <script type="text/javascript">
+        angular.module('app').value('gameSessions', @Model.ToJson());
+    </script>
+}

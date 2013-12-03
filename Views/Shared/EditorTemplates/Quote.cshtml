@@ -1,0 +1,14 @@
+﻿@model ContentBundle.Quote
+
+<div>
+    I am a Quote
+    
+    @Html.LabelFor(m => m.Data)
+    @Html.EditorFor(m => m.Data)
+    
+    @Html.LabelFor(m => m.Author)
+    @Html.EditorFor(m => m.Author)
+    
+    @Html.LabelFor(m => m.QuoteType)
+    @Html.DropDownListFor(m => m.QuoteType)
+</div>

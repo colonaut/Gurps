@@ -1,0 +1,160 @@
+﻿@model MedienKultur.RavenDBUnitOfWork.App_Start.StartUp
+
+
+@{
+    ViewBag.Title = "Home Page (The Test Area)";
+}
+
+
+@ViewBag.Message
+
+
+
+
+<div>
+    
+    
+
+    @*<article>
+        <header class="editable">
+            <h2>I am the title</h2>
+        </header>
+        
+        <div class="entry editable">
+            
+            <p>some paragraph content</p>
+            
+            <section>
+                <h3>dection title</h3>
+                <p>
+                    some section content
+                </p>
+            </section>
+
+        </div>
+        
+    </article>*@
+
+    
+
+    <h1>Directive: datepicker test</h1>
+    
+    
+    <datepicker>
+        <div class="datepicker">
+            <p>{{month.year}} {{month.monthName}}</p>
+            
+            <ul class="head">
+                <li>
+                    #
+                </li>
+                <li ng-repeat="name in month.weekDayNames">
+                    {{name}}
+                </li>
+            </ul>
+                
+            <ul class="body" ng-repeat="week in month.weeks">
+                <li>
+                    {{week.number}}
+                </li>
+                <li ng-repeat="day in week.days" class="active-{{day.isActive}} range-{{day.isRange}}">
+                    {{day.monthDay}}
+                </li>
+            </ul>
+
+        </div>
+    </datepicker>
+    
+
+    <h1>Directive: timer test</h1>
+    
+    <timer duration="'10s'" autoreset="1==1">
+        <div class="timer started-{{isStarted}}">
+            <div class="progress" style="width:{{progress}}%;"></div>
+        </div>
+        
+        {{countdown}} of {{duration}} -> {{hours}}:{{minutes}}:{{seconds}}:{{millis}}
+
+        <button ng-click="start()">start</button> |
+        <button ng-click="pause()">pause</button> |
+        <button ng-click="resume()">resume</button> |
+        <button ng-click="reset()">reset</button>
+    </timer>
+    
+    
+    <timer interval="1000" duration="'10m'" autoreset="1==1">
+        <div style="" class="timer started-{{isStarted}}">
+            <div class="progress" style="width: {{progress}}%;"></div>
+        </div>
+        
+        {{countdown}} of {{duration}} ->
+        
+        {{!isRunning}} {{isPaused}}
+
+        <a href="" class="show-{{!isRunning}}" ng-click="start()">start</a> |
+        <a href="" class="show-{{isRunning}}" ng-click="pause()">pause</a> |
+        <a href="" class="show-{{isPaused}}" ng-click="resume()">resume</a> |
+        <a href="" class="show-{{!isSet}}" ng-click="reset()">reset</a>
+    </timer>
+
+</div> 
+
+@section styles{
+    <style type="text/css">
+        .show-false {
+            background: #f00;
+        }
+        .show-true {
+            background: #0f0;
+        }
+        .timer {
+            border:1px solid #000;
+            height:40px;
+            position: relative;
+
+        }
+        .timer .progress {
+            background: #0f0;
+            height:10px;
+            margin:15px 0 15px 0;overflow: hidden;
+        }
+
+        
+        .datepicker ul {
+            list-style: none;
+            margin: 0;
+            padding: 0;
+        }
+        .datepicker li {
+            display: inline-block;
+            border: 1px solid #000;
+            width: 40px;
+            height: 40px;
+            margin: 2px;
+            padding: 2px;
+        }
+        .datepicker ul.head {
+            font-weight: bold;
+        }
+        .datepicker ul.head li{
+            text-align: center;
+            padding-top: 20px;
+            height: 20px;
+        }
+
+        .datepicker .active-true {
+            background: aqua;
+        }
+        .datepicker .range-false {
+            background: lightgray;
+        }
+    </style>
+}
+
+@section scripts
+{
+    <script type="text/javascript" src="/js/api.gurps.angular.js"></script>
+    <script type="text/javascript">
+        angular.module('app').value('characterModels', '@Model.TestResult');
+    </script>
+}

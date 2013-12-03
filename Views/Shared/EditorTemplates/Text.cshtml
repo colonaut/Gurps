@@ -1,0 +1,12 @@
+﻿@model ContentBundle.Text
+
+<div>
+    I am text
+    
+    @Html.LabelFor(m => m.Data)
+    @Html.EditorFor(m => m.Data)
+    
+    @Html.LabelFor(m => m.Image) (Url)
+    @Html.EditorFor(m => m.Image.Url)
+
+</div>

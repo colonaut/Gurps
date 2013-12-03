@@ -1,0 +1,38 @@
+﻿@model IEnumerable<GurpsCharacter>
+
+@{
+    ViewBag.Title = "Index Characters";
+}
+
+<h1>Characters</h1>
+<div ng-controller="PlayerCharactersController">
+
+        <h1>Directive: character-upload</h1>
+    
+        <character-upload characters="characters">
+            <p>Drop your character json here</p>   
+        </character-upload>
+        
+        <ul>
+            <li ng-repeat="character in characters">
+                <h2>{{character.name}}</h2>
+                <ul class="skills">
+                    <li ng-repeat="skill in character.skills">
+                        <strong>{{skill.name}} {{skill.level}}</strong>
+                        ({{skill.points}} | {{skill.step}}) [{{skill.page}}]
+                    </li>
+                </ul>
+                
+
+            </li>
+        </ul>
+    
+    </div>
+
+@section scripts
+{
+    <script type="text/javascript" src="/js/api.gurps.angular.js"></script>
+    <script type="text/javascript">
+        angular.module('app').value('characters', @Model.ToJson());
+    </script>
+}

@@ -1,0 +1,16 @@
+﻿@model IEnumerable<Article>
+
+@{
+    ViewBag.Title = "Index Articles";
+}
+
+<h2>Index Articles</h2>
+
+
+@section scripts
+{
+    <script type="text/javascript" src="/js/api.gurps.angular.js"></script>
+    <script type="text/javascript">
+        angular.module('app').value('articles', @Model.ToJson());
+    </script>
+}
