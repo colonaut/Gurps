@@ -11,12 +11,11 @@ namespace MedienKultur.Gurps.Models
         {
             Characters = new List<Character>();
             BlogEntries = new List<GameSessionBlogEntry>();
-            Date = DateTime.UtcNow;
         }
 
         public int Id { get; set; }
-        public DateTime Date { get; private set; }
         
+        public DateTime Date { get; set; }
         public GameSetting Setting { get; set; }
         
         public GameMaster GameMaster { get; set; }

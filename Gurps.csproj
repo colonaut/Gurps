@@ -511,10 +511,6 @@
       <Project>{6ca2aba8-e9e8-4342-b332-eddf9112e410}</Project>
       <Name>RequireScriptResolver</Name>
     </ProjectReference>
-    <ProjectReference Include="..\StructureMapControllerFactory\StructureMapControllerFactory.csproj">
-      <Project>{5582447d-5636-4a25-b37f-93afdc10e405}</Project>
-      <Name>StructureMapControllerFactory</Name>
-    </ProjectReference>
     <ProjectReference Include="..\StructureMapRavenDBUnitOfWork\StructureMapRavenDBUnitOfWork.csproj">
       <Project>{647331dc-6500-475c-a029-3a0ba42e8c49}</Project>
       <Name>StructureMapRavenDBUnitOfWork</Name>

@@ -1,5 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Globalization;
+using System.IO;
 using System.Linq;
 using System.Net;
 using System.Net.Http;
@@ -9,6 +11,7 @@ using System.Web.Routing;
 using MedienKultur.CollectionJsonExtended;
 using MedienKultur.Gurps.Models;
 using Raven.Client;
+using Raven.Database.Extensions;
 
 namespace MedienKultur.Gurps.Controllers
 {
@@ -73,7 +76,11 @@ namespace MedienKultur.Gurps.Controllers
 
         public CollectionJsonResult<GameSession> Query()
         {
-            var models = _ravenSession.Query<GameSession>();
+            var models = _ravenSession.Query<GameSession>()
+                .Customize(q => q.WaitForNonStaleResultsAsOfLastWrite());
+                //.AsEnumerable();
+
+
             return new CollectionJsonResult<GameSession>(models);
         }
 
@@ -95,7 +102,10 @@ namespace MedienKultur.Gurps.Controllers
             var entity = new GameSession();
             _ravenSession.Store(entity);
 
-            return new HttpResponseMessage(HttpStatusCode.Created);
+            var response = new HttpResponseMessage{StatusCode = HttpStatusCode.Created};
+            response.Headers.Location = new Uri(Path.Combine("http://", BaseUri, entity.Id.ToString(CultureInfo.InvariantCulture)));
+
+            return response;
         }
 
 
