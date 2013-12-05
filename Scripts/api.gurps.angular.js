@@ -353,9 +353,8 @@
                 $scope.gameSessions = [];
 
                 $scope.create = function () {
-                    console.log('create:');
-
-                    gameSessionsService.create({}, function(createResponse, createHeaderFn) {
+                    console.log('$scope.create (should have template)');
+                    gameSessionsService.create({}, function (createResponse, createHeaderFn) {
                         console.log('created');
 
                         console.log(createHeaderFn('location'), 'header location is the result of 201');
