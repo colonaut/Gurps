@@ -33,14 +33,14 @@ namespace MedienKultur.Gurps.Controllers
             routes.MapRoute(
                 BaseUri + "/{id} DELETE",
                 BaseUri + "/{id}",
-                new {controller = "GameSessions", action = "DeleteGameSession"},
+                new {controller = "GameSessions", action = "Delete"},
                 new {httpMethod = new HttpMethodConstraint("DELETE")}
             );
 
             routes.MapRoute(
                 BaseUri + "/{id} PUT",
                 BaseUri + "/{id}",
-                new { controller = "GameSessions", action = "UpdateGameSession" },
+                new { controller = "GameSessions", action = "Update" },
                 new {httpMethod = new HttpMethodConstraint("PUT")}
             );
 
@@ -52,63 +52,83 @@ namespace MedienKultur.Gurps.Controllers
             );
 
             routes.MapRoute(
-                BaseUri + " GET",
+                BaseUri + " QUERY",
                 BaseUri + "",
                 new { controller = "GameSessions", action = "Query" },
-                new {httpMethod = new HttpMethodConstraint("GET")}
-                );
-
-            //routes.MapRoute(
-            //    BaseUri + "/{id} POST",
-            //    BaseUri + "/{id}",
-            //    new {controller = "Characters", action = "AddCharacter"},
-            //    new {httpMethod = new HttpMethodConstraint("POST")}
-            //);
+                new { httpMethod = new HttpMethodConstraint("QUERY") }
+            );
 
             routes.MapRoute(
                 BaseUri + " POST",
                 BaseUri,
-                new { controller = "GameSessions", action = "CreateGameSession" },
+                new { controller = "GameSessions", action = "Create" },
                 new {httpMethod = new HttpMethodConstraint("POST")}
             );
         }
         #endregion
 
-        public CollectionJsonResult<GameSession> Query()
+        //QUERY
+        public CollectionJsonResponse<GameSession> Query()
         {
             var models = _ravenSession.Query<GameSession>()
                 .Customize(q => q.WaitForNonStaleResultsAsOfLastWrite());
                 //.AsEnumerable();
 
 
-            return new CollectionJsonResult<GameSession>(models);
+            return new CollectionJsonResponse<GameSession>(models);
         }
 
-        public CollectionJsonResult<GameSession> Get(int id)
+        //GET
+        public CollectionJsonResponse<GameSession> Get(int id)
         {
             var model = _ravenSession.Load<GameSession>(id);
-            if (model == null)
-            {
-                Response.StatusCode = 404;
-                Response.StatusDescription = "GameSession was not found";
-            }
-
-            return new CollectionJsonResult<GameSession>(model);
+            //if (model == null)
+            //{
+            //    Response.StatusCode = 404; //therfore we need an error response (wrapped in response!)
+            //    Response.StatusDescription = "GameSession was not found";
+            //} now done from result...?
+            
+            return new CollectionJsonResponse<GameSession>(model);
         }
 
         //POST
-        public HttpResponseMessage CreateGameSession(CollectionJsonReader<GameSession> reader)
+        public CollectionJsonResponse Create(CollectionJsonReader<GameSession> reader)
         {
             var entity = new GameSession();
             _ravenSession.Store(entity);
 
-            var response = new HttpResponseMessage{StatusCode = HttpStatusCode.Created};
-            response.Headers.Location = new Uri(Path.Combine("http://", BaseUri, entity.Id.ToString(CultureInfo.InvariantCulture)));
-
-            return response;
+            return new CollectionJsonResponse<GameSession>(entity);
         }
 
+        //DELETE
+        public CollectionJsonResponse Delete(int id)
+        {
+            var entity = _ravenSession.Load<GameSession>(id);
 
+            if (entity == null)
+            {
+                Response.StatusCode = 404;
+                Response.StatusDescription = "Character was not found"; //TODO: error response?
+            }
+                
+            _ravenSession.Delete(entity);
+
+            return new CollectionJsonResponse<GameSession>(entity);
+        }
+        
+        //PUT
+        public CollectionJsonResponse Update(CollectionJsonReader<GameSession> reader) //TODO this has to be a template representation!
+        {
+            var entity = reader.Entity;
+            if (entity == null)
+            {
+                Response.StatusCode = 404;
+                Response.StatusDescription = "Character was not found"; //TODO: error response?
+            }
+
+            _ravenSession.Store(entity);
+            return new CollectionJsonResponse<GameSession>(entity);
+        }
 
         public ActionResult Index()
         {

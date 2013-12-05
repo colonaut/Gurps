@@ -70,13 +70,13 @@ namespace MedienKultur.Gurps.Controllers
         #endregion
 
 
-        public CollectionJsonResult<GurpsCharacter> Query()
+        public CollectionJsonResponse<GurpsCharacter> Query()
         {
             var models = _ravenSession.Query<GurpsCharacter>();
-            return new CollectionJsonResult<GurpsCharacter>(models);
+            return new CollectionJsonResponse<GurpsCharacter>(models);
         }
 
-        public CollectionJsonResult<GurpsCharacter> Get(int id)
+        public CollectionJsonResponse<GurpsCharacter> Get(int id)
         {
             var model = _ravenSession.Load<GurpsCharacter>(id);
             if (model == null)
@@ -85,7 +85,7 @@ namespace MedienKultur.Gurps.Controllers
                 Response.StatusDescription = "Character was not found";
             }
 
-            return new CollectionJsonResult<GurpsCharacter>(model);
+            return new CollectionJsonResponse<GurpsCharacter>(model);
         }
 
         //POST

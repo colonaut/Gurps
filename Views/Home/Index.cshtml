@@ -9,43 +9,28 @@
 @ViewBag.Message
 
 
+
 <section>
+    <h1>Html5 Month Picker Tests</h1>
+    
+    <input type="month"/>
+
+</section>
+
+
+@*<section>
     <h2>ToDos</h2>
     <ul>
+        <li>href in collection json</li>
         <li>href in collection json</li>
         <li>return href with 201 created as location</li>
         <li>external urls in require script resolver (settings to termine to always call from server or put into file)</li>
     </ul>
-</section>
+</section>*@
 
-<div>
+<section>
     
-    
-
-    @*<article>
-        <header class="editable">
-            <h2>I am the title</h2>
-        </header>
-        
-        <div class="entry editable">
-            
-            <p>some paragraph content</p>
-            
-            <section>
-                <h3>dection title</h3>
-                <p>
-                    some section content
-                </p>
-            </section>
-
-        </div>
-        
-    </article>*@
-
-    
-
     <h1>Directive: datepicker test</h1>
-    
     
     <datepicker>
         <div class="datepicker">
@@ -72,8 +57,10 @@
         </div>
     </datepicker>
     
+</section>
 
-    <h1>Directive: timer test</h1>
+<section>
+<h1>Directive: timer test</h1>
     
     <timer duration="'10s'" autoreset="1==1">
         <div class="timer started-{{isStarted}}">
@@ -104,7 +91,7 @@
         <a href="" class="show-{{!isSet}}" ng-click="reset()">reset</a>
     </timer>
 
-</div> 
+</section> 
 
 @section styles{
     <style type="text/css">
