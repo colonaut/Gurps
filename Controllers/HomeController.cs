@@ -28,7 +28,7 @@ namespace MedienKultur.Gurps.Controllers
 
 
 
-            return View(new MedienKultur.RavenDBUnitOfWork.App_Start.StartUp());
+            return View();
         }
 
         public ActionResult About()

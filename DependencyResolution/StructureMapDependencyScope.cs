@@ -13,6 +13,9 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 // </copyright>
+// <copyright file="IoC.cs" company="colonaut">
+// Modified for MVC5 support
+// </copyright>
 // --------------------------------------------------------------------------------------------------------------------
 
 using System;

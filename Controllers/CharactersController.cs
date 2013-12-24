@@ -3,7 +3,8 @@ using System.Net;
 using System.Net.Http;
 using System.Web.Mvc;
 using System.Web.Routing;
-using MedienKultur.CollectionJsonExtended;
+using CollectionJsonExtended.Client;
+using CollectionJsonExtended.Core;
 using MedienKultur.Gurps.Models;
 using Raven.Client;
 
@@ -70,13 +71,13 @@ namespace MedienKultur.Gurps.Controllers
         #endregion
 
 
-        public CollectionJsonResponse<GurpsCharacter> Query()
+        public CollectionJsonResult<GurpsCharacter> Query()
         {
             var models = _ravenSession.Query<GurpsCharacter>();
-            return new CollectionJsonResponse<GurpsCharacter>(models);
+            return new CollectionJsonResult<GurpsCharacter>(models);
         }
 
-        public CollectionJsonResponse<GurpsCharacter> Get(int id)
+        public CollectionJsonResult<GurpsCharacter> Get(int id)
         {
             var model = _ravenSession.Load<GurpsCharacter>(id);
             if (model == null)
@@ -85,7 +86,7 @@ namespace MedienKultur.Gurps.Controllers
                 Response.StatusDescription = "Character was not found";
             }
 
-            return new CollectionJsonResponse<GurpsCharacter>(model);
+            return new CollectionJsonResult<GurpsCharacter>(model);
         }
 
         //POST

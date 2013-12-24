@@ -1,20 +1,16 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Globalization;
-using System.IO;
-using System.Linq;
-using System.Net;
-using System.Net.Http;
-using System.Web;
+﻿using System.Linq;
 using System.Web.Mvc;
 using System.Web.Routing;
-using MedienKultur.CollectionJsonExtended;
+using CollectionJsonExtended.Client;
+using CollectionJsonExtended.Client.Attributes;
+using CollectionJsonExtended.Core;
 using MedienKultur.Gurps.Models;
 using Raven.Client;
-using Raven.Database.Extensions;
 
 namespace MedienKultur.Gurps.Controllers
 {
+    
+    //[RoutePrefix("api/gamesessions")]
     public class GameSessionsController : Controller
     {
         const string BaseUri = "api/gamesessions";
@@ -33,53 +29,65 @@ namespace MedienKultur.Gurps.Controllers
             routes.MapRoute(
                 BaseUri + "/{id} DELETE",
                 BaseUri + "/{id}",
-                new {controller = "GameSessions", action = "Delete"},
-                new {httpMethod = new HttpMethodConstraint("DELETE")}
+                new { controller = "GameSessions", action = "Delete" },
+                new { httpMethod = new HttpMethodConstraint("DELETE") }
             );
+
 
             routes.MapRoute(
                 BaseUri + "/{id} PUT",
                 BaseUri + "/{id}",
                 new { controller = "GameSessions", action = "Update" },
-                new {httpMethod = new HttpMethodConstraint("PUT")}
+                new { httpMethod = new HttpMethodConstraint("PUT") }
             );
+            
 
-            routes.MapRoute(
-                BaseUri + "/{id} GET",
-                BaseUri + "/{id}",
-                new { controller = "GameSessions", action = "Get" },
-                new {httpMethod = new HttpMethodConstraint("GET")}
-            );
-
-            routes.MapRoute(
-                BaseUri + " QUERY",
-                BaseUri + "",
-                new { controller = "GameSessions", action = "Query" },
-                new { httpMethod = new HttpMethodConstraint("QUERY") }
-            );
-
-            routes.MapRoute(
-                BaseUri + " POST",
-                BaseUri,
-                new { controller = "GameSessions", action = "Create" },
-                new {httpMethod = new HttpMethodConstraint("POST")}
-            );
+            //routes.MapRoute(
+            //    BaseUri + "/{id} GET",
+            //    BaseUri + "/{id}",
+            //    new { controller = "GameSessions", action = "Get" }
+                //,new { httpMethod = new HttpMethodConstraint("GET") }
+            //);
+            
+            //routes.MapRoute(
+            //    BaseUri + " QUERY",
+            //    BaseUri + "",
+            //    new { controller = "GameSessions", action = "Query" },
+            //    new { httpMethod = new HttpMethodConstraint("QUERY") }
+            //);
+            
+            //routes.MapRoute(
+            //    BaseUri + " POST",
+            //    BaseUri,
+            //    new { controller = "GameSessions", action = "Create" },
+            //    new {httpMethod = new HttpMethodConstraint("POST")}
+            //);
+            
         }
         #endregion
 
         //QUERY
-        public CollectionJsonResponse<GameSession> Query()
+        [RouteCollectionJsonQuery("api/gamesessions")] //querystring? default for max number of items?
+        public CollectionJsonResult<GameSession> Query()
         {
             var models = _ravenSession.Query<GameSession>()
                 .Customize(q => q.WaitForNonStaleResultsAsOfLastWrite());
                 //.AsEnumerable();
+            return new CollectionJsonResult<GameSession>(models);
+        }
 
-
-            return new CollectionJsonResponse<GameSession>(models);
+        [RouteCollectionJsonQuery("api/gamesessions/search")] //querystring?
+        public CollectionJsonResult<GameSession> SearchQuery()
+        {
+            var models = _ravenSession.Query<GameSession>()
+                .Customize(q => q.WaitForNonStaleResultsAsOfLastWrite());
+            //.AsEnumerable();
+            return new CollectionJsonResult<GameSession>(models);
         }
 
         //GET
-        public CollectionJsonResponse<GameSession> Get(int id)
+        [RouteCollectionJsonAttributes("api/gamesessions/{id:int}")]
+        public CollectionJsonResult<GameSession> Get(int id)
         {
             var model = _ravenSession.Load<GameSession>(id);
             //if (model == null)
@@ -87,21 +95,22 @@ namespace MedienKultur.Gurps.Controllers
             //    Response.StatusCode = 404; //therfore we need an error response (wrapped in response!)
             //    Response.StatusDescription = "GameSession was not found";
             //} now done from result...?
-            
-            return new CollectionJsonResponse<GameSession>(model);
+
+            return new CollectionJsonResult<GameSession>(model);
         }
 
         //POST
-        public CollectionJsonResponse Create(CollectionJsonReader<GameSession> reader)
+        [RouteCollectionJsonCreate("api/gamesessions")]
+        public CollectionJsonResult Create(CollectionJsonReader<GameSession> reader)
         {
             var entity = new GameSession();
             _ravenSession.Store(entity);
 
-            return new CollectionJsonResponse<GameSession>(entity);
+            return new CollectionJsonResult<GameSession>(entity);
         }
 
         //DELETE
-        public CollectionJsonResponse Delete(int id)
+        public CollectionJsonResult<GameSession> Delete(int id)
         {
             var entity = _ravenSession.Load<GameSession>(id);
 
@@ -113,11 +122,11 @@ namespace MedienKultur.Gurps.Controllers
                 
             _ravenSession.Delete(entity);
 
-            return new CollectionJsonResponse<GameSession>(entity);
+            return new CollectionJsonResult<GameSession>(entity);
         }
         
         //PUT
-        public CollectionJsonResponse Update(CollectionJsonReader<GameSession> reader) //TODO this has to be a template representation!
+        public CollectionJsonResult<GameSession> Update(CollectionJsonReader<GameSession> reader) //TODO this has to be a template representation!
         {
             var entity = reader.Entity;
             if (entity == null)
@@ -127,7 +136,7 @@ namespace MedienKultur.Gurps.Controllers
             }
 
             _ravenSession.Store(entity);
-            return new CollectionJsonResponse<GameSession>(entity);
+            return new CollectionJsonResult<GameSession>(entity);
         }
 
         public ActionResult Index()

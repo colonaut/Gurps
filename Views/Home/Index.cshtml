@@ -1,5 +1,4 @@
-﻿@model MedienKultur.RavenDBUnitOfWork.App_Start.StartUp
-
+﻿
 
 @{
     ViewBag.Title = "Home Page (The Test Area)";
@@ -149,6 +148,6 @@
 {
     <script type="text/javascript" src="/js/api.gurps.angular.js"></script>
     <script type="text/javascript">
-        angular.module('app').value('characterModels', '@Model.TestResult');
+        angular.module('app').value('characterModels', {foo: 'bar'});
     </script>
 }

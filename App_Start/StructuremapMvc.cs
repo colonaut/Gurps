@@ -13,15 +13,18 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 // </copyright>
+// <copyright file="IoC.cs" company="colonaut">
+// Modified for MVC5 support
+// </copyright>
 // --------------------------------------------------------------------------------------------------------------------
 
 using System.Web.Http;
 using System.Web.Mvc;
+using StructureMap;
 using MedienKultur.Gurps.App_Start;
 using MedienKultur.Gurps.DependencyResolution;
-using StructureMap;
 
-[assembly: WebActivator.PreApplicationStartMethod(typeof(StructuremapMvc), "Start")]
+[assembly: WebActivatorEx.PreApplicationStartMethod(typeof(StructuremapMvc), "Start")]
 
 namespace MedienKultur.Gurps.App_Start {
     public static class StructuremapMvc {

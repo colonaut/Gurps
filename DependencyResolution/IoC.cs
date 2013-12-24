@@ -13,6 +13,9 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 // </copyright>
+// <copyright file="IoC.cs" company="colonaut">
+// Modified for MVC5 support
+// </copyright>
 // --------------------------------------------------------------------------------------------------------------------
 
 
@@ -22,14 +25,17 @@ namespace MedienKultur.Gurps.DependencyResolution {
     public static class IoC {
         public static IContainer Initialize() {
             ObjectFactory.Initialize(x =>
+                {
+                    x.Scan(scan =>
                         {
-                            x.Scan(scan =>
-                                    {
-                                        scan.TheCallingAssembly();
-                                        scan.WithDefaultConventions();
-                                    });
-            //                x.For<IExample>().Use<Example>();
+                            scan.TheCallingAssembly();
+                            scan.WithDefaultConventions();
                         });
+                    
+                    //Add Mappings here
+                    //x.For<IExample>().Use<Example>();
+                
+                });
             return ObjectFactory.Container;
         }
     }

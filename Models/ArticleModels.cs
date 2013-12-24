@@ -1,16 +1,8 @@
 ﻿using System;
-using System.Collections;
 using System.Collections.Generic;
-using System.ComponentModel;
-using System.Linq;
 using System.Web;
-using System.Web.Mvc;
-using MedienKultur.CollectionJsonExtended;
-using Newtonsoft.Json;
-using Newtonsoft.Json.Converters;
+using CollectionJsonExtended.Core;
 using MedienKultur.Gurps.Models.Extensions;
-
-
 
 namespace MedienKultur.Gurps.Models
 {
@@ -70,9 +62,9 @@ namespace MedienKultur.Gurps.Models
         public override int Id { get; set; }
         public int UserId { get; set; }
 
-        [CollectionJsonConcrete(typeof(ContentBundle.Text))]
-        [CollectionJsonConcrete(typeof(ContentBundle.Section))]
-        [CollectionJsonConcrete(typeof(ContentBundle.Quote))]
+        [CollectionJsonConcreteType(typeof(ContentBundle.Text))]
+        [CollectionJsonConcreteType(typeof(ContentBundle.Section))]
+        [CollectionJsonConcreteType(typeof(ContentBundle.Quote))]
         public override IList<Content> Contents
         {
             get { return _contents; }
