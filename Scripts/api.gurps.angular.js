@@ -332,16 +332,19 @@
         .factory('gameSessionsService', ['$resource',
             function($resource) {
 
-                var ngr = $resource('api/gameSessions/:id', {}, {
+                var ngr = $resource('api/gamesessions/:id', {}, {
                     query: { method: 'QUERY', params: {}, isArray: false },
                     get: { method: 'GET', params: {}, isArray: false },
-                    create: { method: 'POST', params: {}, isArray: false }
+                    post: { method: 'POST', params: {}, isArray: false },
+                    put: { method: 'PUT', params: {}, isArray: false }
                 });
 
                 return {
+                    base: ngr.get,
                     query: ngr.query,
-                    get: ngr.get,
-                    create: ngr.create
+                    item: ngr.get,
+                    create: ngr.post,
+                    update: ngr.put
                 };
 
             }
@@ -359,8 +362,8 @@
 
                         console.log(createHeaderFn('location'), 'header location is the result of 201');
 
-                        gameSessionsService.query(function(queryResponse) {
-                            collectionJsonItems = queryResponse.collection.items;
+                        gameSessionsService.base(function(baseResponse) {
+                            collectionJsonItems = baseResponse.collection.items;
                             $scope.gameSessions.splice(0, $scope.gameSessions.length);
                             for (ix in collectionJsonItems)
                                 $scope.gameSessions.push(collectionJsonItems[ix].entity);
