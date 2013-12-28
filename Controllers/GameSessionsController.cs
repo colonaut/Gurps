@@ -1,4 +1,5 @@
-﻿using System.Linq;
+﻿using System;
+using System.Linq;
 using System.Web.Mvc;
 using System.Web.Routing;
 using CollectionJsonExtended.Client;
@@ -10,7 +11,7 @@ using Raven.Client;
 namespace MedienKultur.Gurps.Controllers
 {
     
-    //[RoutePrefix("api/gamesessions")]
+    [RoutePrefix("foo/bar")]
     public class GameSessionsController : Controller
     {
         const string BaseUri = "api/gamesessions";
@@ -26,12 +27,12 @@ namespace MedienKultur.Gurps.Controllers
         {
             routes.IgnoreRoute("{resource}.axd/{*pathInfo}");
 
-            routes.MapRoute(
-                BaseUri + "/{id} DELETE",
-                BaseUri + "/{id}",
-                new { controller = "GameSessions", action = "Delete" },
-                new { httpMethod = new HttpMethodConstraint("DELETE") }
-            );
+            //routes.MapRoute(
+            //    BaseUri + "/{id} DELETE",
+            //    BaseUri + "/{id}",
+            //    new { controller = "GameSessions", action = "Delete" },
+            //    new { httpMethod = new HttpMethodConstraint("DELETE") }
+            //);
 
 
             routes.MapRoute(
@@ -67,16 +68,7 @@ namespace MedienKultur.Gurps.Controllers
         #endregion
 
         //QUERY
-        [RouteCollectionJsonQuery("api/gamesessions")] //querystring? default for max number of items?
-        public CollectionJsonResult<GameSession> Query()
-        {
-            var models = _ravenSession.Query<GameSession>()
-                .Customize(q => q.WaitForNonStaleResultsAsOfLastWrite());
-                //.AsEnumerable();
-            return new CollectionJsonResult<GameSession>(models);
-        }
-
-        [RouteCollectionJsonQuery("api/gamesessions/search")] //querystring?
+        [RouteCollectionJsonQuery("api/gamesessions/search","search")] //querystring?
         public CollectionJsonResult<GameSession> SearchQuery()
         {
             var models = _ravenSession.Query<GameSession>()
@@ -85,8 +77,18 @@ namespace MedienKultur.Gurps.Controllers
             return new CollectionJsonResult<GameSession>(models);
         }
 
+        //GET all
+        [RouteCollectionJsonBase("api/gamesessions")] //also works with simple route
+        public CollectionJsonResult<GameSession> Get()
+        {
+            var models = _ravenSession.Query<GameSession>()
+                .Customize(q => q.WaitForNonStaleResultsAsOfLastWrite());
+            //.AsEnumerable();
+            return new CollectionJsonResult<GameSession>(models);
+        }
+
         //GET
-        [RouteCollectionJsonAttributes("api/gamesessions/{id:int}")]
+        [RouteCollectionJsonItem("api/gamesessions/{id:int}")]
         public CollectionJsonResult<GameSession> Get(int id)
         {
             var model = _ravenSession.Load<GameSession>(id);
@@ -101,7 +103,7 @@ namespace MedienKultur.Gurps.Controllers
 
         //POST
         [RouteCollectionJsonCreate("api/gamesessions")]
-        public CollectionJsonResult Create(CollectionJsonReader<GameSession> reader)
+        public CollectionJsonResult<GameSession> Create(CollectionJsonReader<GameSession> reader)
         {
             var entity = new GameSession();
             _ravenSession.Store(entity);
@@ -110,6 +112,7 @@ namespace MedienKultur.Gurps.Controllers
         }
 
         //DELETE
+        [RouteCollectionJsonDelete("api/gamesessions/{id:int}")]
         public CollectionJsonResult<GameSession> Delete(int id)
         {
             var entity = _ravenSession.Load<GameSession>(id);

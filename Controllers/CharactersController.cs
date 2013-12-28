@@ -4,6 +4,7 @@ using System.Net.Http;
 using System.Web.Mvc;
 using System.Web.Routing;
 using CollectionJsonExtended.Client;
+using CollectionJsonExtended.Client.Attributes;
 using CollectionJsonExtended.Core;
 using MedienKultur.Gurps.Models;
 using Raven.Client;
@@ -40,12 +41,12 @@ namespace MedienKultur.Gurps.Controllers
                 new {httpMethod = new HttpMethodConstraint("PUT")}
             );
 
-            routes.MapRoute(
-                BaseUri + "/{id} GET",
-                BaseUri + "/{id}",
-                new {controller = "Characters", action = "Get"},
-                new {httpMethod = new HttpMethodConstraint("GET")}
-            );
+            //routes.MapRoute(
+            //    BaseUri + "/{id} GET",
+            //    BaseUri + "/{id}",
+            //    new {controller = "Characters", action = "Get"},
+            //    new {httpMethod = new HttpMethodConstraint("GET")}
+            //);
 
             routes.MapRoute(
                 BaseUri + " GET",
@@ -77,6 +78,7 @@ namespace MedienKultur.Gurps.Controllers
             return new CollectionJsonResult<GurpsCharacter>(models);
         }
 
+        [RouteCollectionJsonItem(BaseUri + "/{id}")]
         public CollectionJsonResult<GurpsCharacter> Get(int id)
         {
             var model = _ravenSession.Load<GurpsCharacter>(id);
