@@ -88,7 +88,7 @@ namespace MedienKultur.Gurps.Controllers
         }
 
         //GET
-        [RouteCollectionJsonItem("api/gamesessions/{id:int}")]
+        [RouteProviderCollectionJsonItem("api/gamesessions/{id:int}")]
         public CollectionJsonResult<GameSession> Get(int id)
         {
             var model = _ravenSession.Load<GameSession>(id);

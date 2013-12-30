@@ -332,7 +332,7 @@
         .factory('gameSessionsService', ['$resource',
             function($resource) {
 
-                var ngr = $resource('api/gamesessions/:id', {}, {
+                var ngr = $resource('foo/bar/api/gamesessions/:id', {}, {
                     query: { method: 'QUERY', params: {}, isArray: false },
                     get: { method: 'GET', params: {}, isArray: false },
                     post: { method: 'POST', params: {}, isArray: false },

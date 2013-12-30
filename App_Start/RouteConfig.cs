@@ -10,6 +10,7 @@ using System.Web.Mvc;
 using System.Web.Mvc.Routing;
 using System.Web.Routing;
 using CollectionJsonExtended.Client;
+using CollectionJsonExtended.Client.Attributes;
 using CollectionJsonExtended.Client.Extensions;
 using CollectionJsonExtended.Core;
 using MedienKultur.Gurps.Controllers;
@@ -29,15 +30,17 @@ namespace MedienKultur.Gurps.App_Start
 
             RequireScriptController.RegisterRoutes(routes);
 
-            CharactersController.RegisterRoutes(routes);
+            //CharactersController.RegisterRoutes(routes);
 
-            GameSessionsController.RegisterRoutes(routes);
+            //GameSessionsController.RegisterRoutes(routes);
 
             ArticlesController.RegisterRoutes(routes);
 
             routes.MapMvcAttributeRoutes(); //also maps the CollectionJsonRoutes
-
-            routes.PublishCollectionJsonAttributeRoutes();
+            //routes.PublishCollectionJsonAttributeRoutes();
+            var debugDictionary = RouteCollectionJsonAttribute._debugInstancesDictionary;
+            
+            
 
             //CollectionJson
             routes.MapRoute(
