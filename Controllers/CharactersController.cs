@@ -78,7 +78,7 @@ namespace MedienKultur.Gurps.Controllers
             return new CollectionJsonResult<GurpsCharacter>(models);
         }
 
-        [CollectionJsonItemRoute(BaseUri + "/{id}", Name = "MyName")]
+        [CollectionJsonRoute(Is.Item, BaseUri + "/{id}", RouteName = "MyName")]
         public CollectionJsonResult<GurpsCharacter> Get(int id)
         {
             var model = _ravenSession.Load<GurpsCharacter>(id);

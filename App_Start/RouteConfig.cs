@@ -23,9 +23,7 @@ namespace MedienKultur.Gurps.App_Start
 
             routes.MapMvcAttributeRoutes(); //also maps the CollectionJsonRoutes
 
-            var oldDebugDictionary = RouteCollectionJsonAttribute._debugInstancesDictionary;
-
-            var newDebugDictionary = RouteInfo.InternalCache;
+            var attempt1DebugDictionary = RouteInfo.InternalCache;
             
             //CollectionJson
             routes.MapRoute(
