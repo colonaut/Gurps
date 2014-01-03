@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Web;
 using CollectionJsonExtended.Core;
+using CollectionJsonExtended.Core.Attributes;
 using MedienKultur.Gurps.Models.Extensions;
 
 namespace MedienKultur.Gurps.Models

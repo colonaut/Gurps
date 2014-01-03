@@ -68,7 +68,7 @@ namespace MedienKultur.Gurps.Controllers
         #endregion
 
         //QUERY
-        [CollectionJsonTask(Do.Query, "api/gamesessions/search", Relation = "my relation annotation")] //querystring?
+        [CollectionJsonTask(Do.Query, "api/gamesessions/search")] //querystring?
         public CollectionJsonResult<GameSession> SearchQuery()
         {
             var models = _ravenSession.Query<GameSession>()

@@ -3,6 +3,7 @@ using System.Web.Routing;
 using CollectionJsonExtended.Client;
 using CollectionJsonExtended.Client.Attributes;
 using MedienKultur.Gurps.Controllers;
+using MedienKultur.Gurps.Models;
 using MedienKultur.RequireScriptResolver;
 
 namespace MedienKultur.Gurps.App_Start
@@ -23,7 +24,8 @@ namespace MedienKultur.Gurps.App_Start
 
             routes.MapMvcAttributeRoutes(); //also maps the CollectionJsonRoutes
 
-            var attempt1DebugDictionary = RouteInfo.InternalCache;
+            var attempt1DebugDictionary = RouteInfo.GetCacheForDebug();
+            var attempt2DebugDictionary = RouteInfo.Find(typeof(GameSession));
             
             //CollectionJson
             routes.MapRoute(
