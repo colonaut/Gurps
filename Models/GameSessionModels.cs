@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using CollectionJsonExtended.Core.Attributes;
 using MedienKultur.Gurps.Models.Extensions;
 
 namespace MedienKultur.Gurps.Models
@@ -21,6 +22,7 @@ namespace MedienKultur.Gurps.Models
         public GameMaster GameMaster { get; set; }
         public IEnumerable<Character> Characters { get; set; }
 
+        [CollectionJsonConcreteType(typeof(GurpsCharacter))]
         public IEnumerable<GameSessionBlogEntry> BlogEntries { get; set; }
 
     }

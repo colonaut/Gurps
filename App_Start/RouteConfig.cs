@@ -27,12 +27,14 @@ namespace MedienKultur.Gurps.App_Start
 
             routes.MapMvcAttributeRoutes(); //also maps the CollectionJsonRoutes
 
+            var attempt1DebugDictionary = SingletonFactory<UrlInfoCollection>.Instance
+                .Find(typeof(GurpsCharacter));
 
-            var attempt1DebugDictionary = Singleton<UrlInfoCollection>.Instance.Find(typeof(GurpsCharacter));
+            var attempt2DebugDictionary = SingletonFactory<UrlInfoCollection>.Instance
+                .Find<RouteInfo>(typeof(GurpsCharacter));
 
-            var attempt2DebugDictionary = Singleton<UrlInfoCollection>.Instance.Find<RouteInfo>(typeof(GurpsCharacter));
-
-            var attempt3DebugDictionary = Singleton<UrlInfoCollection>.Instance.Find<RouteInfo>(typeof(GameSession));
+            var attempt3DebugDictionary = SingletonFactory<UrlInfoCollection>.Instance
+                .Find<RouteInfo>(typeof(GameSession));
 
 
             

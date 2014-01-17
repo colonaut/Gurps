@@ -79,7 +79,6 @@ namespace MedienKultur.Gurps.Controllers
 
         //GET all
         [CollectionJsonRoute(Is.Base, "api/gamesessions")]
-        //[RouteCollectionJsonBase("api/gamesessions")] //also works with simple route
         public CollectionJsonResult<GameSession> Get()
         {
             var models = _ravenSession.Query<GameSession>()
@@ -90,7 +89,6 @@ namespace MedienKultur.Gurps.Controllers
 
         //GET
         [CollectionJsonRoute(Is.Item, "api/gamesessions/{id:int}")]
-        //[RouteCollectionJsonItem("api/gamesessions/{id:int}")]
         public CollectionJsonResult<GameSession> Get(int id)
         {
             var model = _ravenSession.Load<GameSession>(id);
@@ -105,7 +103,6 @@ namespace MedienKultur.Gurps.Controllers
 
         //POST
         [CollectionJsonRoute(Is.Create, "api/gamesessions")]
-        //[RouteCollectionJsonCreate("api/gamesessions")]
         public CollectionJsonResult<GameSession> Create(CollectionJsonReader<GameSession> reader)
         {
             var entity = new GameSession();
