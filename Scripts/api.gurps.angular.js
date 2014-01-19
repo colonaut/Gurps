@@ -336,7 +336,8 @@
                     query: { method: 'QUERY', params: {}, isArray: false },
                     get: { method: 'GET', params: {}, isArray: false },
                     post: { method: 'POST', params: {}, isArray: false },
-                    put: { method: 'PUT', params: {}, isArray: false }
+                    put: { method: 'PUT', params: {}, isArray: false },
+                    remove: { method: 'DELETE', params: {}, isArray: false },
                 });
 
                 return {
@@ -344,7 +345,8 @@
                     query: ngr.query,
                     item: ngr.get,
                     create: ngr.post,
-                    update: ngr.put
+                    update: ngr.put,
+                    remove: ngr.remove
                 };
 
             }

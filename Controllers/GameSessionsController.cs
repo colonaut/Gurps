@@ -67,17 +67,7 @@ namespace MedienKultur.Gurps.Controllers
         }
         #endregion
 
-        //QUERY
-        [CollectionJsonTask(Do.Query, "api/gamesessions/search")] //querystring?
-        public CollectionJsonResult<GameSession> SearchQuery()
-        {
-            var models = _ravenSession.Query<GameSession>()
-                .Customize(q => q.WaitForNonStaleResultsAsOfLastWrite());
-            //.AsEnumerable();
-            return new CollectionJsonResult<GameSession>(models);
-        }
-
-        //GET all
+        //GET base
         [CollectionJsonRoute(Is.Base, "api/gamesessions")]
         public CollectionJsonResult<GameSession> Get()
         {
@@ -87,7 +77,17 @@ namespace MedienKultur.Gurps.Controllers
             return new CollectionJsonResult<GameSession>(models);
         }
 
-        //GET
+        //GET query
+        [CollectionJsonTask(Do.Query, "api/gamesessions/search")] //querystring works just with method signature
+        public CollectionJsonResult<GameSession> SearchQuery(string dateTime)
+        {
+            var models = _ravenSession.Query<GameSession>()
+                .Customize(q => q.WaitForNonStaleResultsAsOfLastWrite());
+            //.AsEnumerable();
+            return new CollectionJsonResult<GameSession>(models);
+        }
+
+        //GET item
         [CollectionJsonRoute(Is.Item, "api/gamesessions/{id:int}")]
         public CollectionJsonResult<GameSession> Get(int id)
         {

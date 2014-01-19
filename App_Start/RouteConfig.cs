@@ -27,6 +27,8 @@ namespace MedienKultur.Gurps.App_Start
 
             routes.MapMvcAttributeRoutes(); //also maps the CollectionJsonRoutes
 
+            // just a debug ****
+            
             var attempt1DebugDictionary = SingletonFactory<UrlInfoCollection>.Instance
                 .Find(typeof(GurpsCharacter));
 
@@ -36,9 +38,8 @@ namespace MedienKultur.Gurps.App_Start
             var attempt3DebugDictionary = SingletonFactory<UrlInfoCollection>.Instance
                 .Find<RouteInfo>(typeof(GameSession));
 
+            //********
 
-            
-            //CollectionJson
             routes.MapRoute(
                 name: "CollectionJson",
                 url: "{controller}/{action}/{id}",
