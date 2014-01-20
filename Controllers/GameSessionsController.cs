@@ -67,6 +67,25 @@ namespace MedienKultur.Gurps.Controllers
         }
         #endregion
 
+        //a link
+        [CollectionJsonRoute(Is.LinkForBase, "api/gamesessions/feed")]
+        public CollectionJsonResult<GameSession> GetNews()
+        {
+            var models = _ravenSession.Query<GameSession>()
+                .Customize(q => q.WaitForNonStaleResultsAsOfLastWrite());
+            //.AsEnumerable();
+            return new CollectionJsonResult<GameSession>(models);
+        }
+
+        //a link
+        [CollectionJsonRoute(Is.LinkForItem, "api/gamesessions/{id}/avatar")]
+        public CollectionJsonResult<GameSession> GetImage(int id)
+        {
+            var model = _ravenSession.Load<GameSession>(id);
+            //.AsEnumerable();
+            return new CollectionJsonResult<GameSession>(model);
+        }
+
         //GET base
         [CollectionJsonRoute(Is.Base, "api/gamesessions")]
         public CollectionJsonResult<GameSession> Get()
