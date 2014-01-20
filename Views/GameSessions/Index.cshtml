@@ -4,18 +4,27 @@
     ViewBag.Title = "Index GameSessions";
 }
 
-<h1>Available Game Sessions</h1>
-<div ng-controller="GameSessionsController">
+<section>
+<h1> Game Sessions</h1>
+    <form ng-controller="GameSessionsController" name="gameSessions">
+        
+        And here is my directive:
+        <template></template>
+        and here it ends.
 
         <ul>
-            <li ng-repeat="session in gameSessions">
+            <li ng-repeat="session in items">
                 <h2>{{session.date}}</h2>
             </li>
         </ul>
         
-        <button ng-click="create()">Game Session erstellen</button>
+        <button ng-click="create()">Game Session (server)</button>
+        <button ng-click="template()">Game Session (collectioin json client)</button>
 
-</div>
+    </form>
+</section>
+
+
 
 @section scripts
 {

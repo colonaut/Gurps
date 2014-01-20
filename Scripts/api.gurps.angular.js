@@ -327,9 +327,84 @@
             ]
         );
 
+    angular.module('cmsModule', [])
+        .directive('editable', ['$compile', function ($compile) {
+            var edittpl = '<div contenteditable="false">' +
+                '<button ng-click="edit()">edit</button>' +
+                '<button ng-click="save()">save</button>' +
+                '</div>';
+            return {
+                restrict: 'C',
+                replace: false,
+                scope: {
+                    contenteditable: '@'
+                },
+                controller: ['$scope', '$element', '$attrs',
+                    function ($scope, $element, $attrs) {
+
+                        function apply() {
+                            $element.attr('contenteditable', $scope.contenteditable);
+                        }
+
+                        $scope.$on('edit', apply);
+                        $scope.$on('save', apply);
+
+                        $scope.edit = function () {
+                            $scope.contenteditable = true;
+                            $scope.$emit('edit');
+                        };
+                        $scope.save = function () {
+                            $scope.contenteditable = false;
+                            $scope.$emit('save');
+                        };
+                    }
+                ],
+                link: {
+                    pre:
+                        function (scope, element, attrs) {
+                            element.prepend(edittpl);
+                            $compile(element.contents())(scope);
+                        }
+                }
+            };
+        }]);
 
     angular.module('gameSessionModule', ['alienDateModule'])
-        .factory('gameSessionsService', ['$resource',
+        .directive('template', [
+            '$compile',
+            function($compile) {
+                var tplform = '<section data-ng-form>' +
+                        '<button ng-click="template()">template</button>' +
+                        '<button ng-click="save()">save</button>' +
+                    '</section>';
+                return {
+                    restrict: 'E',
+                    template: tplform,
+                    replace: true,
+                    //transclude: true,
+                    scope: {
+                    },
+                    link: {
+                        post: function (scope, element, attrs) {
+                            console.log(element, 'post');
+                            scope.template = function() {
+                                element.append('<p>fdkjlhlsjkh</p>');
+                            };
+                            scope.save = function() {
+                                        
+                            };
+                        },
+                        pre: function(scope, element, attrs) {
+                            console.log(element, 'pre');
+                            element.prepend('<h1>pre compile link</h1>');
+                            $compile(element.contents())(scope);
+                        }
+                    }
+                };
+            }
+        ])
+        .factory('gameSessionsService', [
+            '$resource',
             function($resource) {
 
                 var ngr = $resource('foo/bar/api/gamesessions/:id', {}, {
@@ -351,75 +426,63 @@
 
             }
         ])
-        .controller('GameSessionsController', ['$scope', 'gameSessionsService',
-            function gameSessionsController($scope, gameSessionsService) {
-                var ix, collectionJsonItems;
+        .controller('GameSessionsController', [
+            '$scope', '$element', '$compile', 'gameSessionsService',
+            function gameSessionsController($scope, $element, $compile, gameSessionsService) {
+                var ix, items, template;
 
-                $scope.gameSessions = [];
+                $scope.items = [];
 
-                $scope.create = function () {
+                $scope.create = function() {
                     console.log('$scope.create (should have template)');
-                    gameSessionsService.create({}, function (createResponse, createHeaderFn) {
+                    gameSessionsService.create({}, function(createResponse, createHeaderFn) {
                         console.log('created');
 
                         console.log(createHeaderFn('location'), 'header location is the result of 201');
 
                         gameSessionsService.base(function(baseResponse) {
-                            collectionJsonItems = baseResponse.collection.items;
-                            $scope.gameSessions.splice(0, $scope.gameSessions.length);
-                            for (ix in collectionJsonItems)
-                                $scope.gameSessions.push(collectionJsonItems[ix].entity);
+                            items = baseResponse.collection.items;
+                            $scope.items.splice(0, $scope.items.length);
+                            for (ix in items)
+                                $scope.items.push(items[ix].entity);
                         });
 
                     });
+                };
+
+
+                function controls() {
+                    console.log($scope.gameSessions, 'controls()');
+                    for (ix in template.data) {
+                        console.log(template.data[ix], 'controls()');
+
+                        console.log($element, 'element');
+                        $element.append('<input type="text" name="' + template.data[ix].name + '"></input>');
+
+
+                        //$scope.gameSessions.$addControl();
+                    }
+                }
+
+                $scope.template = function() {
+                    if (!template) {
+                        gameSessionsService.base({}, function(response) {
+                            template = response.collection.template;
+                            if (!template)
+                                throw new Error("template not found in base response");
+                            controls();
+                        });
+                        return;
+                    }
+                    controls();
+
+
                 };
             }
         ]);
 
 
-    angular.module('cmsModule', [])
-        .directive('editable', ['$compile', function($compile) {
-            var edittpl = '<div contenteditable="false">' +
-                '<button ng-click="edit()">edit</button>' +
-                '<button ng-click="save()">save</button>' +
-                '</div>';
-            return {
-                restrict: 'C',
-                replace: false,
-                scope: {
-                    contenteditable: '@'
-                },
-                controller: ['$scope', '$element', '$attrs',
-                    function ($scope, $element, $attrs) {
-
-                        function apply() {
-                            $element.attr('contenteditable', $scope.contenteditable);
-                        }
-
-                        $scope.$on('edit', apply);
-                        $scope.$on('save', apply);
-
-                        $scope.edit = function() {
-                            $scope.contenteditable = true;
-                            $scope.$emit('edit');
-                        };
-                        $scope.save = function() {
-                            $scope.contenteditable = false;
-                            $scope.$emit('save');
-                        };
-                    }
-                ],
-                link: {
-                    pre:
-                        function(scope, element, attrs) {
-                            element.prepend(edittpl);
-                            $compile(element.contents())(scope);
-                        }
-                }
-            };
-        }]);
-        
-
+    
 
     angular.module('app', ['cmsModule', 'characterModule', 'gameSessionModule'])
         .value('appModel', {test:'available'});
