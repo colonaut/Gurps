@@ -10,8 +10,8 @@ namespace MedienKultur.Gurps.Models
     {
         public int Id { get; set; } //is primary key, but we also set it, when we send data to the server ans want to check the id...
         public string Name { get; set; }
-        public int SettingId { get; set; }
-        public int PlayerId { get; set; }
+        public int SettingId { get; private set; }
+        public int PlayerId { get; private set; }
     }
 
     public class GameMaster : Character

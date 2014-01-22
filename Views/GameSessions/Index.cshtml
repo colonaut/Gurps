@@ -6,11 +6,8 @@
 
 <section>
 <h1> Game Sessions</h1>
-    <form ng-controller="GameSessionsController" name="gameSessions">
+    <form ng-controller="GameSessionsController" name="gameSessions" data-base-uri="foo/bar/api/gamesessions/">
         
-        And here is my directive:
-        <template></template>
-        and here it ends.
 
         <ul>
             <li ng-repeat="session in items">
@@ -19,7 +16,11 @@
         </ul>
         
         <button ng-click="create()">Game Session (server)</button>
-        <button ng-click="template()">Game Session (collectioin json client)</button>
+
+
+        <div>
+            THIS will be the directive with isolated scope! (on own element then)
+        </div>
 
     </form>
 </section>

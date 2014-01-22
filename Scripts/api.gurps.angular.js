@@ -1,7 +1,8 @@
-﻿/// <reference path="angular.js" />
-/// <reference path="angular-resource.js" />
-
+﻿/// <reference path="angular-1.2.8/angular.js" />
+/// <reference path="angular-1.2.8/angular-resource.js" />
+/// <reference path="angular-1.2.8/angular-sanitize.js" />
 /// <reference path="AlienDate.js" />
+
 (function () {
     angular.module('alienDateModule', [])
         .directive('datepicker', ['$compile', function($compile) {
@@ -12,19 +13,29 @@
                     cultureattr: '=culture',
                     calendarattr: '=calendar'
                 },
-                //template: 'some html',
-                controller: ['$scope', '$element',
+                compile: function (tElement, tAttr) {
+                    //compile the content within the element (we have isolated scope)
+                    var compiledContents,
+                        contents = tElement.contents().remove();
+
+                    return function (scope, iElement, iAttr) {
+                        if (!compiledContents)
+                            compiledContents = $compile(contents);
+
+                        compiledContents(scope, function (clone, scope) {
+                            iElement.append(clone);
+                        });
+                    };
+                },
+                controller: [
+                    '$scope', '$element',
                     function($scope, $element) {
-
-
-                        //$scope.month = AlienDate.month(new AlienDate(new Date().toISOString()));
-
                         $scope.month = AlienDate.month(new AlienDate('2000-4-5'));
-
-                        //console.log($scope.month);
-
                     }
-                ]
+                ],
+                _link: function(scope, element, attrs) {
+                    element.scope().month = AlienDate.month(new AlienDate('2000-4-5'));
+                }
             };
         }]);
 })();
@@ -54,164 +65,188 @@
 
 (function() {
 
-    function run($timeout, startTime) {
-        if (this.countdown <= 0) {
-            if (this.autoreset())
-                this.$emit('timer-reset');
+        function run($timeout, startTime) {
+            if (this.countdown <= 0) {
+                if (this.autoreset())
+                    this.$emit('timer-reset');
+                this.isRunning = false;
+                return;
+            }
+            this.isRunning = true;
+            var $scope = this;
+            $scope.timeout = $timeout(function() {
+                if ($scope.countdown > 0) {
+                    $scope.countdown = $scope.countdown - $scope.interval;
+                    $scope.progress = 100 - (100 / $scope.duration) * $scope.countdown;
+                }
+                $scope.millis = new Date().getTime() - startTime;
+                $scope.seconds = Math.floor(($scope.millis / 1000) % 60);
+                $scope.minutes = Math.floor((($scope.millis / (1000 * 60)) % 60));
+                $scope.hours = Math.floor((($scope.millis / (1000 * 60 * 60)) % 24));
+                run.call($scope, $timeout, startTime);
+            }, this.interval);
+        }
+
+        function reset($timeout) {
+            this.isSet = true;
             this.isRunning = false;
-            return;
+            $timeout.cancel(this.timeout);
+            this.countdown = this.duration;
+            this.progress = 0;
+            this.timeoutId = null;
+            this.millis = 0;
+            this.seconds = 0;
+            this.minutes = 0;
+            this.hours = 0;
+            this.days = 0;
         }
-        this.isRunning = true;
-        var $scope = this;
-        $scope.timeout = $timeout(function () {
-            if ($scope.countdown > 0) {
-                $scope.countdown = $scope.countdown - $scope.interval;
-                $scope.progress = 100 - (100 / $scope.duration) * $scope.countdown;
-            }
-            $scope.millis = new Date().getTime() - startTime;
-            $scope.seconds = Math.floor(($scope.millis / 1000) % 60);
-            $scope.minutes = Math.floor((($scope.millis / (1000 * 60)) % 60));
-            $scope.hours = Math.floor((($scope.millis / (1000 * 60 * 60)) % 24));
-            run.call($scope, $timeout, startTime);
-        }, this.interval);
-    }
 
-    function reset($timeout) {
-        this.isSet = true;
-        this.isRunning = false;
-        $timeout.cancel(this.timeout);
-        this.countdown = this.duration;
-        this.progress = 0;
-        this.timeoutId = null;
-        this.millis = 0;
-        this.seconds = 0;
-        this.minutes = 0;
-        this.hours = 0;
-        this.days = 0;
-    }
-
-    function init() {
-        var unit, interval, duration, progress;
-        if (!this.interval) {
-            unit = this.durationattr.trim().replace(/\d/g, '');
-            duration = parseInt(this.durationattr.trim(), 10);
-            interval = this.intervalattr;
-            switch (unit) {
-            case 'ms':
-                this.interval = interval || 1;
-                this.duration = duration;
-                break;
-            case 'm':
-            case 'min':
-                this.interval = interval || 1000 * 60;
-                this.duration = duration * 1000 * 60;
-                break;
-            case 'h':
-            case 'hrs':
-                this.interval = interval || 1000 * 60 * 60;
-                this.duration = duration * 1000* 60 * 60;
-                break;
-            case 's':
-            case 'sec':
-            default:
-                this.interval = interval || 1000;
-                this.duration = duration * 1000;
-                break;
+        function init() {
+            var unit, interval, duration, progress;
+            if (!this.interval) {
+                unit = this.durationattr.trim().replace(/\d/g, '');
+                duration = parseInt(this.durationattr.trim(), 10);
+                interval = this.intervalattr;
+                switch (unit) {
+                case 'ms':
+                    this.interval = interval || 1;
+                    this.duration = duration;
+                    break;
+                case 'm':
+                case 'min':
+                    this.interval = interval || 1000 * 60;
+                    this.duration = duration * 1000 * 60;
+                    break;
+                case 'h':
+                case 'hrs':
+                    this.interval = interval || 1000 * 60 * 60;
+                    this.duration = duration * 1000 * 60 * 60;
+                    break;
+                case 's':
+                case 'sec':
+                default:
+                    this.interval = interval || 1000;
+                    this.duration = duration * 1000;
+                    break;
+                }
             }
+            this.countdown = 0;
+            this.progress = 100;
         }
-        this.countdown = 0;
-        this.progress = 100;
-    }
 
-    angular.module('characterModule', ['CollectionJsonServices', 'alienDateModule'])
-        //timer directive
-        .directive('timer', ['$timeout', function($timeout) {
-            return {
-                restrict: 'E',
-                replace: false,
-                scope: {
-                    intervalattr: '=interval',
-                    //countdownattr: '=countdown',
-                    durationattr: '=duration',
-                    autoreset: '&'
-                },
-                //template: 'some html',
-                
-                controller: ['$scope', '$element',
-                    function ($scope, $element) {
-                        var startTime = null;
-                        var pausedTime = null;
-                        var resumedTime = null;
+        angular.module('characterModule', ['CollectionJsonServices', 'alienDateModule'])
+            //timer directive
+            .directive('timer', [
+                '$timeout', '$compile',
+                function ($timeout, $compile) {
+                    return {
+                        restrict: 'E',
+                        //replace: true,
+                        //transclude: true,
+                        //template: '<section data-ng-transclude></section>',
+                        scope: {
+                            intervalattr: '=interval',
+                            //countdownattr: '=countdown',
+                            durationattr: '=duration',
+                            autoreset: '&'
+                        },
+                        compile: function(tElement, tAttr) {
+                            //compile the content within the element (we have isolated scope)
+                            var compiledContents,
+                                contents = tElement.contents().remove();
 
-                        $scope.isRunning = false;
-                        $scope.isPaused = false;
-                        $scope.isSet = false;
+                            return function(scope, iElement, iAttr) {
+                                if (!compiledContents)
+                                    compiledContents = $compile(contents);
 
-                        init.call($scope);
-                        reset.call($scope, $timeout);
+                                $compile(contents)(scope, function (clone, scope) {
+                                    iElement.append(clone);
+                                });
+                            };
+                        },
+                        controller: [
+                            '$scope', '$element',
+                            function($scope, $element) {
+                                var startTime = null;
+                                var pausedTime = null;
+                                var resumedTime = null;
 
-                        $scope.$on('timer-start', function(evt) {
-                            evt.preventDefault();
-                            evt.stopPropagation();
-                            reset.call($scope, $timeout);
-                            startTime = new Date().getTime();
-                            run.call($scope, $timeout, startTime);
-                        });
+                                console.log($scope, 'controller');
 
-                        $scope.$on('timer-pause', function (evt) {
-                            evt.preventDefault();
-                            evt.stopPropagation();
-                            $scope.isPaused = true;
-                            $timeout.cancel($scope.timeout);
-                            pausedTime = new Date().getTime();
-                            resumedTime = null;
-                        });
+                                $scope.isRunning = false;
+                                $scope.isPaused = false;
+                                $scope.isSet = false;
 
-                        $scope.$on('timer-resume', function (evt) {
-                            evt.preventDefault();
-                            evt.stopPropagation();
-                            $scope.isPaused = false;
-                            if (!pausedTime)
-                                return;
-                            startTime = new Date().getTime() - (pausedTime - startTime);
-                            pausedTime = null;
-                            resumedTime = new Date().getTime();
-                            run.call($scope, $timeout, startTime);
-                        });
+                                init.call($scope);
+                                reset.call($scope, $timeout);
 
-                        $scope.$on('timer-reset', function (evt) {
-                            evt.preventDefault();
-                            evt.stopPropagation();
-                            pausedTime = startTime = resumedTime = null;
-                            reset.call($scope, $timeout);
-                        });
-                    
-                        $scope.start = function () {
-                            $scope.$emit('timer-start');
-                        };
+                                $scope.$on('timer-start', function(evt) {
+                                    evt.preventDefault();
+                                    evt.stopPropagation();
+                                    reset.call($scope, $timeout);
+                                    startTime = new Date().getTime();
+                                    run.call($scope, $timeout, startTime);
+                                });
 
-                        $scope.pause = function() {
-                            $scope.$emit('timer-pause');
-                        };
+                                $scope.$on('timer-pause', function(evt) {
+                                    evt.preventDefault();
+                                    evt.stopPropagation();
+                                    $scope.isPaused = true;
+                                    $timeout.cancel($scope.timeout);
+                                    pausedTime = new Date().getTime();
+                                    resumedTime = null;
+                                });
 
-                        $scope.resume = function() {
-                            $scope.$emit('timer-resume');
-                        };
+                                $scope.$on('timer-resume', function(evt) {
+                                    evt.preventDefault();
+                                    evt.stopPropagation();
+                                    $scope.isPaused = false;
+                                    if (!pausedTime)
+                                        return;
+                                    startTime = new Date().getTime() - (pausedTime - startTime);
+                                    pausedTime = null;
+                                    resumedTime = new Date().getTime();
+                                    run.call($scope, $timeout, startTime);
+                                });
 
-                        $scope.reset = function() {
-                            $scope.$emit('timer-reset');
-                        };
+                                $scope.$on('timer-reset', function(evt) {
+                                    evt.preventDefault();
+                                    evt.stopPropagation();
+                                    pausedTime = startTime = resumedTime = null;
+                                    reset.call($scope, $timeout);
+                                });
 
-                        $element.bind('$destroy', function() {
-                            $timeout.cancel($scope.timeoutId);
-                        });
+                                $scope.start = function() {
+                                    console.log('start timer');
+                                    $scope.$emit('timer-start');
+                                };
 
-                        //implement autostartattribute
+                                $scope.pause = function() {
+                                    console.log('pause timer');
+                                    $scope.$emit('timer-pause');
+                                };
 
-                    }
-                ]
-            };
-        }])
+                                $scope.resume = function() {
+                                    console.log('resume timer');
+                                    $scope.$emit('timer-resume');
+                                };
+
+                                $scope.reset = function() {
+                                    console.log('reset timer');
+                                    $scope.$emit('timer-reset');
+                                };
+
+                                $element.bind('$destroy', function() {
+                                    $timeout.cancel($scope.timeoutId);
+                                });
+
+                                //implement autostartattribute
+
+                            }
+                        ]
+                    };
+                }
+            ])
 
         //characterUpload directive
         .directive("characterUpload", ['$http', function($http) {
@@ -370,39 +405,80 @@
         }]);
 
     angular.module('gameSessionModule', ['alienDateModule'])
-        .directive('template', [
-            '$compile',
-            function($compile) {
-                var tplform = '<section data-ng-form>' +
-                        '<button ng-click="template()">template</button>' +
-                        '<button ng-click="save()">save</button>' +
-                    '</section>';
+        .directive('test', function() {
+            return {
+                restrict: 'A',
+                scope:{}
+            };
+        })
+        .directive('baseUri', [
+            '$resource', '$compile',
+            function ($resource, $compile) {
+                var toolingHtml = '<div data-ng-form novalidate>' +
+                        '<button ng-click="$coljex.template()">template</button>' +
+                        '<section ng-if="$coljex.$active.template">' +
+                            '<p>foo bar: the template</p>' +
+                            '{{TEMPLATE}}' +
+                            '<button ng-click="$coljex.cancelTemplate()">cancel</button>' +
+                            '<button ng-click="$coljex.saveTemplate()">save</button>' +
+                        '</section>' +
+                    '</div>';
                 return {
-                    restrict: 'E',
-                    template: tplform,
-                    replace: true,
-                    //transclude: true,
-                    scope: {
-                    },
+                    restrict: 'A',
+                    //template: toolingHtml,
+                    replace: false,
+                    transclude: false,
+                    //scope: {}, //this should not be isolated here,as we will have conflicts with other isolated directive scopes.... or should it be? YES! we can then have it on another item! check how form controller is done in angular...
                     link: {
-                        post: function (scope, element, attrs) {
-                            console.log(element, 'post');
-                            scope.template = function() {
-                                element.append('<p>fdkjlhlsjkh</p>');
-                            };
-                            scope.save = function() {
+                        post: function(scope, element, attrs) {
+                            console.log(scope, 'directive post scope');
+                            console.log(element.scope(), 'directive post element scope');
+
+                            var di, ix, result;
+                            function controls(data) {
+                                result += '<ul>';
+                                for (ix in data) {
+                                    di = data[ix];
+                                    result += '<li><label for="">' + di.prompt + '</label>';
+                                    if (di.data)
+                                        controls(di.data);
+                                    else
                                         
-                            };
+                                        result += '<input type="text"></input>('+di.type+')';
+                                    result += '</li>';
+                                }
+                                result += '</ul>';
+                                
+                            }
+                            
+
+                            //$resource(attrs.baseUri).get({}, function (response) {
+                            //    scope.$coljex.$base = response.collection;
+
+                            //    controls(response.collection.template.data);
+                            //    toolingHtml = toolingHtml.replace('{{TEMPLATE}}', result);
+
+                            //    element.prepend(toolingHtml);
+                            //    $compile(element.contents())(scope);
+                            //});
                         },
                         pre: function(scope, element, attrs) {
-                            console.log(element, 'pre');
-                            element.prepend('<h1>pre compile link</h1>');
-                            $compile(element.contents())(scope);
+                            console.log(scope, 'directive pre scope');
+                            console.log(element.scope(), 'directive pre element scope');
+
+                            scope.$coljex = {
+                                template: function() { this.$active.template = true; },
+                                cancelTemplate: function() { this.$active.template = false; },
+                                $active: {
+
+                                }
+                            };
                         }
                     }
                 };
             }
         ])
+        
         .factory('gameSessionsService', [
             '$resource',
             function($resource) {
@@ -429,13 +505,15 @@
         .controller('GameSessionsController', [
             '$scope', '$element', '$compile', 'gameSessionsService',
             function gameSessionsController($scope, $element, $compile, gameSessionsService) {
-                var ix, items, template;
-
+                console.log($scope, 'controller');
+                var ix, items;
+                
                 $scope.items = [];
 
                 $scope.create = function() {
                     console.log('$scope.create (should have template)');
-                    gameSessionsService.create({}, function(createResponse, createHeaderFn) {
+
+                    gameSessionsService.create({}, function (createResponse, createHeaderFn) {
                         console.log('created');
 
                         console.log(createHeaderFn('location'), 'header location is the result of 201');
@@ -451,40 +529,13 @@
                 };
 
 
-                function controls() {
-                    console.log($scope.gameSessions, 'controls()');
-                    for (ix in template.data) {
-                        console.log(template.data[ix], 'controls()');
-
-                        console.log($element, 'element');
-                        $element.append('<input type="text" name="' + template.data[ix].name + '"></input>');
-
-
-                        //$scope.gameSessions.$addControl();
-                    }
-                }
-
-                $scope.template = function() {
-                    if (!template) {
-                        gameSessionsService.base({}, function(response) {
-                            template = response.collection.template;
-                            if (!template)
-                                throw new Error("template not found in base response");
-                            controls();
-                        });
-                        return;
-                    }
-                    controls();
-
-
-                };
             }
         ]);
 
 
     
 
-    angular.module('app', ['cmsModule', 'characterModule', 'gameSessionModule'])
+    angular.module('app', ['characterModule', 'gameSessionModule'])
         .value('appModel', {test:'available'});
 
 })();
