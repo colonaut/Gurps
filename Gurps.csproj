@@ -157,7 +157,6 @@
     <Compile Include="Models\CategoryModels.cs" />
     <Compile Include="Models\CharacterModels.cs" />
     <Compile Include="Models\Extensions\DropDownListExtensions.cs" />
-    <Compile Include="Models\Extensions\JsonExtensions.cs" />
     <Compile Include="Models\GameSessionModels.cs" />
     <Compile Include="Models\ModelBinders\ContentBundleModelBinders.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />

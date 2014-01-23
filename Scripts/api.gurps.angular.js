@@ -452,15 +452,15 @@
                             }
                             
 
-                            //$resource(attrs.baseUri).get({}, function (response) {
-                            //    scope.$coljex.$base = response.collection;
+                            $resource(attrs.baseUri).get({}, function (response) {
+                                scope.$coljex.$base = response.collection;
 
-                            //    controls(response.collection.template.data);
-                            //    toolingHtml = toolingHtml.replace('{{TEMPLATE}}', result);
+                                controls(response.collection.template.data);
+                                toolingHtml = toolingHtml.replace('{{TEMPLATE}}', result);
 
-                            //    element.prepend(toolingHtml);
-                            //    $compile(element.contents())(scope);
-                            //});
+                                element.prepend(toolingHtml);
+                                $compile(element.contents())(scope);
+                            });
                         },
                         pre: function(scope, element, attrs) {
                             console.log(scope, 'directive pre scope');

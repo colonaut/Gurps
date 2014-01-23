@@ -51,7 +51,7 @@ namespace MedienKultur.Gurps.Models
     }
 
  
-    public class Article : ContentBundle, IJsonSerializeable
+    public class Article : ContentBundle
     {
         private IList<Content> _contents = new List<Content>();
 

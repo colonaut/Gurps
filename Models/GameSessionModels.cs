@@ -6,7 +6,7 @@ using MedienKultur.Gurps.Models.Extensions;
 namespace MedienKultur.Gurps.Models
 {
 
-    public class GameSession : IJsonSerializeable
+    public class GameSession
     {
         public GameSession()
         {

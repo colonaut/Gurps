@@ -1,4 +1,5 @@
-﻿@model IEnumerable<GameSession>
+﻿@using CollectionJsonExtended.Core
+@model IEnumerable<GameSession>
 
 @{
     ViewBag.Title = "Index GameSessions";
@@ -30,7 +31,7 @@
 @section scripts
 {
     <script type="text/javascript" src="/js/api.gurps.angular.js"></script>
-    <script type="text/javascript">
-        angular.module('app').value('gameSessions', @Model.ToJson());
-    </script>
+    @*<script type="text/javascript">
+        angular.module('app').value('gameSessions', @( MvcHtmlString.Create(new CollectionJsonWriter<GameSession>().Serialize() )) );
+    </script>*@
 }
