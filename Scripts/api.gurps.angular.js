@@ -405,29 +405,23 @@
         }]);
 
     angular.module('gameSessionModule', ['alienDateModule'])
-        .directive('test', function() {
-            return {
-                restrict: 'A',
-                scope:{}
-            };
-        })
+        //as NOT isolated directive dealing with the next controller
         .directive('baseUri', [
             '$resource', '$compile',
-            function ($resource, $compile) {
+            function($resource, $compile) {
                 var toolingHtml = '<div data-ng-form novalidate>' +
-                        '<button ng-click="$coljex.template()">template</button>' +
-                        '<section ng-if="$coljex.$active.template">' +
-                            '<p>foo bar: the template</p>' +
-                            '{{TEMPLATE}}' +
-                            '<button ng-click="$coljex.cancelTemplate()">cancel</button>' +
-                            '<button ng-click="$coljex.saveTemplate()">save</button>' +
-                        '</section>' +
+                    '<button ng-click="$coljex.template()">template</button>' +
+                    '<section ng-if="$coljex.$active.template">' +
+                    '<p>foo bar: the template</p>' +
+                    '{{TEMPLATE}}' +
+                    '<button ng-click="$coljex.cancelTemplate()">cancel</button>' +
+                    '<button ng-click="$coljex.saveTemplate()">save</button>' +
+                    '</section>' +
                     '</div>';
                 return {
                     restrict: 'A',
                     //template: toolingHtml,
                     replace: false,
-                    transclude: false,
                     //scope: {}, //this should not be isolated here,as we will have conflicts with other isolated directive scopes.... or should it be? YES! we can then have it on another item! check how form controller is done in angular...
                     link: {
                         post: function(scope, element, attrs) {
@@ -435,6 +429,7 @@
                             console.log(element.scope(), 'directive post element scope');
 
                             var di, ix, result;
+
                             function controls(data) {
                                 result += '<ul>';
                                 for (ix in data) {
@@ -443,16 +438,15 @@
                                     if (di.data)
                                         controls(di.data);
                                     else
-                                        
-                                        result += '<input type="text"></input>('+di.type+')';
+                                        result += '<input type="text"></input>(' + di.type + ')';
                                     result += '</li>';
                                 }
                                 result += '</ul>';
-                                
-                            }
-                            
 
-                            $resource(attrs.baseUri).get({}, function (response) {
+                            }
+
+
+                            $resource(attrs.baseUri).get({}, function(response) {
                                 scope.$coljex.$base = response.collection;
 
                                 controls(response.collection.template.data);
@@ -478,7 +472,116 @@
                 };
             }
         ])
+
+        .factory('$recursion', ['$compile', function($compile) {
+            return {
+                compile: function(element) {
+                    var contents = element.contents().remove();
+                    var compiledContents;
+                    return function(scope, iElement) {
+                        if (!compiledContents) {
+                            compiledContents = $compile(contents);
+                        }
+                        compiledContents(scope, function(clone) {
+                            iElement.append(clone);
+                        });
+                    };
+                }
+            };
+        }])
+        .directive("recursion", ['$compile', '$recursion', function($compile, $recursion) {
+            var template;
+            function getTemplate(element) {
+                //already exists
+                if (template)
+                    return template;
+                //inline
+                template = element[0].innerHTML; //TODO:check empty or whitespace
+                if (template)
+                    return template;
+                //default
+                template = '<p>{{current.prompt}} (from directive template return function)</p>' +
+                    '<ul>' +
+                    '<li ng-repeat="data in current.data">' +
+                    '   <recursion current="data"></recursion>' +
+                    '</li>' +
+                    '</ul>';
+                return template;
+
+            }
+
+            return {
+                restrict: "E",
+                scope: { current: '=' },
+                //template:
+                //    '<p>{{current.prompt}} (from directive template property)</p>' +
+                //        '<ul>' +
+                //        '<li ng-repeat="data in current.data">' +
+                //        '   <recursion current="data"></recursion>' +
+                //        '</li>' +
+                //        '</ul>',
+                
+                template: getTemplate,
+                compile: function (element) {
+                    return $recursion.compile(element);
+                }
+            };
+        }])
+
+
+//As isolated widget
+        .directive('collection', [
+            '$compile',
+            function($compile) {
+                var defaultTemplate = '<p>I am the default html for random: {{random}}</p>';
+                return {
+                    restrict: 'E',
+                    scope:
+                    {
+                        base: '@',
+                        branch: '='
+                    },
+                    compile: function(tElement, tAttr) {
+                        var compiledContents,
+                            elementContents = tElement.contents().remove();
+                        if (!elementContents.length)
+                            elementContents = angular.element(defaultTemplate);
+
+                        //this is the link function
+                        return function (scope, iElement, iAttr) {
+                            if (!compiledContents)
+                                compiledContents = $compile(elementContents);
+                            compiledContents(scope, function (clone) {
+                                iElement.append(clone);
+                            });
+                        };
+                    },
+                    controller: [
+                        '$scope', '$http',
+                        function($scope, $http) {
+                            console.log($scope, 'collection directive scope');
+
+                            $scope.random = Math.floor((Math.random() * 6) + 1);
+
+                            //$scope.isArray = function(item) {
+                            //    return 
+                            //};
+
+                            $http.get('/foo/bar/api/gamesessions')
+                                .success(function(data, status, headers, config) {
+                                    $scope.base = data.collection;
+                                })
+                                .error(function (data, status, headers, config) { });
+
+
+                        }
+                    ],
+                };
+            }
+        ])
+
         
+
         .factory('gameSessionsService', [
             '$resource',
             function($resource) {
@@ -505,7 +608,7 @@
         .controller('GameSessionsController', [
             '$scope', '$element', '$compile', 'gameSessionsService',
             function gameSessionsController($scope, $element, $compile, gameSessionsService) {
-                console.log($scope, 'controller');
+                console.log($scope, 'GameSessionsController');
                 var ix, items;
                 
                 $scope.items = [];
@@ -514,11 +617,10 @@
                     console.log('$scope.create (should have template)');
 
                     gameSessionsService.create({}, function (createResponse, createHeaderFn) {
-                        console.log('created');
+                        //console.log('created');
+                        //console.log(createHeaderFn('location'), 'header location is the result of 201');
 
-                        console.log(createHeaderFn('location'), 'header location is the result of 201');
-
-                        gameSessionsService.base(function(baseResponse) {
+                        gameSessionsService.base(function (baseResponse) {
                             items = baseResponse.collection.items;
                             $scope.items.splice(0, $scope.items.length);
                             for (ix in items)

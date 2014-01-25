@@ -6,22 +6,60 @@
 }
 
 <section>
-<h1> Game Sessions</h1>
-    <form ng-controller="GameSessionsController" name="gameSessions" data-base-uri="foo/bar/api/gamesessions/">
+    <form ng-controller="GameSessionsController" name="gameSessions">
+        @*data-base-uri="foo/bar/api/gamesessions/"*@
         
+        <section>
+            <h2>recursion directive</h2>
+            <recursion current="{prompt: 'a', data:[{prompt: 'b', data:[{prompt: 'c'},{prompt: 'c', data:[{prompt: 'd'}]}]},{prompt: 'b', data:[]}]}">
+                <p>{{current.prompt}} (from directive template return function evaluating inline html)</p>
+                <ul>
+                    <li ng-repeat="data in current.data">
+                        <recursion current="data"></recursion>
+                    </li>
+                </ul>
+            </recursion>
+        </section>
 
-        <ul>
-            <li ng-repeat="session in items">
-                <h2>{{session.date}}</h2>
-            </li>
-        </ul>
+        <section>
+            <h3>collection directive: has no inline content:</h3>
+            <collection base="/foo/bar/api/gamesessions"></collection>                 
+        </section>
+
+        <section>
+            <h3>collection directive: has inline content:</h3>
+            <collection base="/foo/bar/api/gamesessions">
+                <p>I am inline!</p>
+                <p>random: {{random}}</p>
+                <p>version: {{base.version}}</p>
+
+
+
+
+                <ul>
+                    <li ng-repeat="data in base.template.data">
+                        <label>{{data.prompt}}</label>
+                        <input type="text" name="data.name"></input>
+                    </li>
+                </ul>
+
+
+            </collection>
+            <p>.</p> 
+        </section>
+
+
+        <section>
+            <h2> Game Sessions from server</h2>
+            <ul>
+                <li ng-repeat="session in items">
+                    <h2>{{session.date}}</h2>
+                </li>
+            </ul>
         
-        <button ng-click="create()">Game Session (server)</button>
-
-
-        <div>
-            THIS will be the directive with isolated scope! (on own element then)
-        </div>
+            <button ng-click="create()">Game Session (server)</button>
+        </section>
+       
 
     </form>
 </section>

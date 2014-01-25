@@ -11,7 +11,7 @@ namespace MedienKultur.Gurps.Models
         public GameSession()
         {
             Characters = new List<Character>();
-            BlogEntries = new List<GameSessionBlogEntry>();
+            SlogEntries = new List<SlogEntry>();
         }
 
         public int Id { get; set; }
@@ -23,15 +23,15 @@ namespace MedienKultur.Gurps.Models
         public IEnumerable<Character> Characters { get; set; }
 
         [CollectionJsonConcreteType(typeof(GurpsCharacter))]
-        public IEnumerable<GameSessionBlogEntry> BlogEntries { get; set; }
+        public IEnumerable<SlogEntry> SlogEntries { get; set; }
 
     }
 
 
 
-    public class GameSessionBlogEntry
+    public class SlogEntry
     {
-        public GameSessionBlogEntry()
+        public SlogEntry()
         {
             
         }
