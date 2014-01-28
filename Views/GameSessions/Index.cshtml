@@ -19,12 +19,27 @@
                     </li>
                 </ul>
             </recursion>
+
+
+<p>???</p>
+
+            <div recursion="{prompt: 'a', data:[{prompt: 'b', data:[{prompt: 'c'},{prompt: 'c', data:[{prompt: 'd'}]}]},{prompt: 'b', data:[]}]}">
+                <p>{{recursion.prompt}} (from directive template return function evaluating inline html)</p>
+                <ul>
+                    <li ng-repeat="item in recursion.data">
+                        <div recursion="item"></div>
+                    </li>
+                </ul>
+            </div>
+
         </section>
 
-        <section>
+
+        @*      <section>
             <h3>collection directive: has no inline content:</h3>
-            @*<collection base="/foo/bar/api/gamesessions"></collection>*@              
-        </section>
+            <collection base="/foo/bar/api/gamesessions"></collection>       
+        </section>*@
+
 
         <section>
             <h3>collection directive: has inline content:</h3>

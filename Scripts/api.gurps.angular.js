@@ -413,68 +413,29 @@
 
                     var contents = element.contents().remove();
                     var compiledContents;
-                    return {
-                        post: function(scope, iElement) {
-                            scope.foo = scope.$parent.foo || inlineTemplate;
+                    return function(scope, iElement) {
+                        scope.inlineTemplate = scope.$parent.inlineTemplate || inlineTemplate;
+                        if (!compiledContents)
+                            //compiledContents = $compile(contents);
+                            compiledContents = $compile(angular
+                                .element('<div>' + scope.inlineTemplate + '</div>')
+                                .contents());
 
-                            console.log(inlineTemplate, 'inlineTemplate', scope.$id);
+                        compiledContents(scope, function(clone) {
+                            iElement.append(clone);
+                        });
 
-                            console.log(scope.foo, 'scope foo', scope.$id);
-
-
-                            console.log(angular.element('<p>' + scope.foo + '</p>'));
-
-
-                            //console.log(scope, 'post from compile (does compile)');
-                            if (!compiledContents) {
-                                //compiledContents = $compile(contents);
-                                compiledContents = $compile(angular.element('<p>' + scope.foo + '</p>'));
-
-                            }
-                            //console.log(compiledContents);
-                            compiledContents(scope, function (clone) {
-                                iElement.append(clone);
-                            });
-                        },
-                        pre: function (scope, iElement) {
-                            //console.log(scope, 'pre from compile');
-                        }
                     };
                 }
             };
         }])
         //recursion directive
         .directive("recursion", ['$compile', '$recursion', function ($compile, $recursion) {
-            var defaultTemplate = '<p>{{current.prompt}} (from directive template return function)</p>' +
-                '<ul>' +
-                '<li ng-repeat="data in current.data">' +
-                '   <recursion current="data"></recursion>' +
-                '</li>' +
-                '</ul>';
-            function getTemplate(element, attr) {
-                //console.log(this, 'this');
-                //console.log(element, 'arg1');
-                //console.log(attr, 'arg2');
-
-                //console.log(element.scope(), 'element scope');
-
-                ////already exists
-                //if (template)
-                //    return template;
-                //inline
-                var inlineTemplate = element[0].innerHTML; //TODO:check empty or whitespace
-                
-                if (inlineTemplate)
-                    return inlineTemplate;
-                
-                return defaultTemplate;
-            }
-
             return {
-                restrict: "E",
+                restrict: "AE",
                 scope: {
-                    current: '='
-                    ,tmpltest: '='
+                    current: '=',
+                    recursion: '='
                 },
                 //template: '<p>{{current.prompt}} (from directive template property)</p>' +
                 //        '<ul>' +
@@ -482,11 +443,8 @@
                 //        '   <recursion current="data"></recursion>' +
                 //        '</li>' +
                 //        '</ul>',
-
-                //template: getTemplate,
-                compile: function (element, attr) {
-                    var result = $recursion.compile(element);
-                    return result;
+                compile: function (element) {
+                    return $recursion.compile(element);                    
                 },                
             };
         }])
