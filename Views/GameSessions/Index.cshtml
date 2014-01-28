@@ -14,8 +14,8 @@
             <recursion current="{prompt: 'a', data:[{prompt: 'b', data:[{prompt: 'c'},{prompt: 'c', data:[{prompt: 'd'}]}]},{prompt: 'b', data:[]}]}">
                 <p>{{current.prompt}} (from directive template return function evaluating inline html)</p>
                 <ul>
-                    <li ng-repeat="data in current.data">
-                        <recursion current="data"></recursion>
+                    <li ng-repeat="item in current.data">
+                        <recursion current="item"></recursion>
                     </li>
                 </ul>
             </recursion>
@@ -23,7 +23,7 @@
 
         <section>
             <h3>collection directive: has no inline content:</h3>
-            <collection base="/foo/bar/api/gamesessions"></collection>                 
+            @*<collection base="/foo/bar/api/gamesessions"></collection>*@              
         </section>
 
         <section>
@@ -33,15 +33,32 @@
                 <p>random: {{random}}</p>
                 <p>version: {{base.version}}</p>
 
-
-
-
                 <ul>
+                    
+                </ul>
+
+                <recursion current="base.template">
+                    <ul>
+                        <li ng-repeat="item in current.data">
+                            {{item.prompt}} ({{item.prompt}})
+                            
+
+                            rec. 1 (if objects)
+                            <recursion current="item" ng-if="data.objetcs"></recursion>
+
+                            rec.2 (if object)
+                            <recursion current="item" ng.if="data.object"></recursion>
+                        </li>
+                    </ul>                    
+                </recursion>
+
+
+                @*<ul>
                     <li ng-repeat="data in base.template.data">
                         <label>{{data.prompt}}</label>
                         <input type="text" name="data.name"></input>
                     </li>
-                </ul>
+                </ul>*@
 
 
             </collection>
@@ -49,7 +66,7 @@
         </section>
 
 
-        <section>
+        @*<section>
             <h2> Game Sessions from server</h2>
             <ul>
                 <li ng-repeat="session in items">
@@ -58,7 +75,7 @@
             </ul>
         
             <button ng-click="create()">Game Session (server)</button>
-        </section>
+        </section>*@
        
 
     </form>

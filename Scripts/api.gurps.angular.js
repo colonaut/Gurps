@@ -405,7 +405,93 @@
         }]);
 
     angular.module('gameSessionModule', ['alienDateModule'])
-        //as NOT isolated directive dealing with the next controller
+        //$recursion factory
+        .factory('$recursion', ['$compile', function ($compile) {
+            return {
+                compile: function (element) {
+                    var inlineTemplate = element[0].innerHTML.toString();
+
+                    var contents = element.contents().remove();
+                    var compiledContents;
+                    return {
+                        post: function(scope, iElement) {
+                            scope.foo = scope.$parent.foo || inlineTemplate;
+
+                            console.log(inlineTemplate, 'inlineTemplate', scope.$id);
+
+                            console.log(scope.foo, 'scope foo', scope.$id);
+
+
+                            console.log(angular.element('<p>' + scope.foo + '</p>'));
+
+
+                            //console.log(scope, 'post from compile (does compile)');
+                            if (!compiledContents) {
+                                //compiledContents = $compile(contents);
+                                compiledContents = $compile(angular.element('<p>' + scope.foo + '</p>'));
+
+                            }
+                            //console.log(compiledContents);
+                            compiledContents(scope, function (clone) {
+                                iElement.append(clone);
+                            });
+                        },
+                        pre: function (scope, iElement) {
+                            //console.log(scope, 'pre from compile');
+                        }
+                    };
+                }
+            };
+        }])
+        //recursion directive
+        .directive("recursion", ['$compile', '$recursion', function ($compile, $recursion) {
+            var defaultTemplate = '<p>{{current.prompt}} (from directive template return function)</p>' +
+                '<ul>' +
+                '<li ng-repeat="data in current.data">' +
+                '   <recursion current="data"></recursion>' +
+                '</li>' +
+                '</ul>';
+            function getTemplate(element, attr) {
+                //console.log(this, 'this');
+                //console.log(element, 'arg1');
+                //console.log(attr, 'arg2');
+
+                //console.log(element.scope(), 'element scope');
+
+                ////already exists
+                //if (template)
+                //    return template;
+                //inline
+                var inlineTemplate = element[0].innerHTML; //TODO:check empty or whitespace
+                
+                if (inlineTemplate)
+                    return inlineTemplate;
+                
+                return defaultTemplate;
+            }
+
+            return {
+                restrict: "E",
+                scope: {
+                    current: '='
+                    ,tmpltest: '='
+                },
+                //template: '<p>{{current.prompt}} (from directive template property)</p>' +
+                //        '<ul>' +
+                //        '<li ng-repeat="data in current.data">' +
+                //        '   <recursion current="data"></recursion>' +
+                //        '</li>' +
+                //        '</ul>',
+
+                //template: getTemplate,
+                compile: function (element, attr) {
+                    var result = $recursion.compile(element);
+                    return result;
+                },                
+            };
+        }])
+
+        //collection as NOT isolated directive dealing with the next controller
         .directive('baseUri', [
             '$resource', '$compile',
             function($resource, $compile) {
@@ -473,63 +559,7 @@
             }
         ])
 
-        .factory('$recursion', ['$compile', function($compile) {
-            return {
-                compile: function(element) {
-                    var contents = element.contents().remove();
-                    var compiledContents;
-                    return function(scope, iElement) {
-                        if (!compiledContents) {
-                            compiledContents = $compile(contents);
-                        }
-                        compiledContents(scope, function(clone) {
-                            iElement.append(clone);
-                        });
-                    };
-                }
-            };
-        }])
-        .directive("recursion", ['$compile', '$recursion', function($compile, $recursion) {
-            var template;
-            function getTemplate(element) {
-                //already exists
-                if (template)
-                    return template;
-                //inline
-                template = element[0].innerHTML; //TODO:check empty or whitespace
-                if (template)
-                    return template;
-                //default
-                template = '<p>{{current.prompt}} (from directive template return function)</p>' +
-                    '<ul>' +
-                    '<li ng-repeat="data in current.data">' +
-                    '   <recursion current="data"></recursion>' +
-                    '</li>' +
-                    '</ul>';
-                return template;
-
-            }
-
-            return {
-                restrict: "E",
-                scope: { current: '=' },
-                //template:
-                //    '<p>{{current.prompt}} (from directive template property)</p>' +
-                //        '<ul>' +
-                //        '<li ng-repeat="data in current.data">' +
-                //        '   <recursion current="data"></recursion>' +
-                //        '</li>' +
-                //        '</ul>',
-                
-                template: getTemplate,
-                compile: function (element) {
-                    return $recursion.compile(element);
-                }
-            };
-        }])
-
-
-//As isolated widget
+        //collection As isolated widget
         .directive('collection', [
             '$compile',
             function($compile) {
@@ -538,8 +568,7 @@
                     restrict: 'E',
                     scope:
                     {
-                        base: '@',
-                        branch: '='
+                        base: '@'
                     },
                     compile: function(tElement, tAttr) {
                         var compiledContents,
@@ -559,7 +588,7 @@
                     controller: [
                         '$scope', '$http',
                         function($scope, $http) {
-                            console.log($scope, 'collection directive scope');
+                            //console.log($scope, 'collection directive scope');
 
                             $scope.random = Math.floor((Math.random() * 6) + 1);
 
@@ -570,6 +599,7 @@
                             $http.get('/foo/bar/api/gamesessions')
                                 .success(function(data, status, headers, config) {
                                     $scope.base = data.collection;
+                                    $scope.template = data.collection.template;
                                 })
                                 .error(function (data, status, headers, config) { });
 
@@ -608,13 +638,47 @@
         .controller('GameSessionsController', [
             '$scope', '$element', '$compile', 'gameSessionsService',
             function gameSessionsController($scope, $element, $compile, gameSessionsService) {
-                console.log($scope, 'GameSessionsController');
+                //console.log($scope, 'GameSessionsController');
                 var ix, items;
-                
+
+                $scope.recursionTest = {
+                    prompt: 'a',
+                    data: [
+                        {
+                            prompt: 'b',
+                            data: [
+                              { prompt: 'c' },
+                              {
+                                  prompt: 'c',
+                                  data: [
+                                    { prompt: 'd' }
+                                  ]
+                              }
+                            ]
+                        },
+                        {
+                            prompt: 'b',
+                            data: []
+                        
+                        }
+                    ],
+                    other: [
+                        {
+                            text: 'otherA',
+                            other: [
+                                {
+                                text: 'otherB',
+                                other: []
+                                }
+                            ]
+                        }
+                    ]
+                };
+
                 $scope.items = [];
 
                 $scope.create = function() {
-                    console.log('$scope.create (should have template)');
+                    //console.log('$scope.create (should have template)');
 
                     gameSessionsService.create({}, function (createResponse, createHeaderFn) {
                         //console.log('created');
