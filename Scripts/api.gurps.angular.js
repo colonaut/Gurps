@@ -3,6 +3,8 @@
 /// <reference path="angular-1.2.8/angular-sanitize.js" />
 /// <reference path="AlienDate.js" />
 
+
+
 (function () {
     angular.module('alienDateModule', [])
         .directive('datepicker', ['$compile', function($compile) {
@@ -406,38 +408,40 @@
 
     angular.module('gameSessionModule', ['alienDateModule'])
         //$recursion factory
-        .factory('$recursion', ['$compile', function ($compile) {
-            return {
-                compile: function (element, attr) {
-                    var inlineTemplate = element[0].innerHTML.toString();
-                    var contents = element.contents().remove();
-                    var compiledContents;
-                    return function (scope, iElement, iAttr) {
+        .factory('$recursion', [
+            '$compile', function($compile) {
+                return {
+                    compile: function(element, attr) {
+                        var inlineTemplate = element[0].innerHTML.toString();
+                        var contents = element.contents().remove();
+                        var compiledContents;
+                        return function(scope, iElement, iAttr) {
 
-                        //console.log(scope),
-                        //console.log(iAttr);
+                            //console.log(scope),
+                            //console.log(iAttr);
 
-                        //scope.recursion = scope.$eval(attr.recursion);
-                        //scope.recur = scope.$eval(iAttr.recursion); 
+                            //scope.recursion = scope.$eval(attr.recursion);
+                            //scope.recur = scope.$eval(iAttr.recursion); 
 
-                        scope.inlineTemplate = scope.$parent.inlineTemplate || inlineTemplate;
-                        if (!compiledContents)
+                            scope.inlineTemplate = scope.$parent.inlineTemplate || inlineTemplate;
+                            if (!compiledContents)
                             //compiledContents = $compile(contents);
-                            compiledContents = $compile(angular
-                                .element('<div>' + scope.inlineTemplate + '</div>')
-                                .contents());
+                                compiledContents = $compile(angular
+                                    .element('<div>' + scope.inlineTemplate + '</div>')
+                                    .contents());
 
-                        compiledContents(scope, function (clone) {
-                            iElement.append(clone);
-                        });
-                    };
-                }
-            };
-        }])
+                            compiledContents(scope, function(clone) {
+                                iElement.append(clone);
+                            });
+                        };
+                    }
+                };
+            }
+        ])
         //recursion directive
         .directive('recursion', [
             '$compile', '$recursion',
-            function ($compile, $recursion) {
+            function($compile, $recursion) {
                 return {
                     restrict: "AE",
                     scope: {
@@ -450,14 +454,14 @@
                     //        '   <recursion current="data"></recursion>' +
                     //        '</li>' +
                     //        '</ul>',
-                    compile: function (element, attr) {
+                    compile: function(element, attr) {
 
                         //console.log(attr);
                         //console.log(a);
 
                         return $recursion.compile(element, attr);
                     }
-                    
+
                 };
             }
         ])
@@ -465,18 +469,17 @@
         //modified include readingreading cintents and use it as inline template... #-400
         .directive('modInclude', [
             '$compile', '$templateCache',
-            function ($compile, $templateCache) {
+            function($compile, $templateCache) {
                 return {
-                      restrict: 'A',
-                      priority: -400,
-                      require: 'modInclude',
-                      link: function(scope, $element, $attr, ctrl) {
+                    restrict: 'A',
+                    priority: -400,
+                    require: 'modInclude',
+                    link: function(scope, $element, $attr, ctrl) {
                         var template = $templateCache.get($attr.modInclude);
                         if (!template) {
                             template = $element[0].innerHTML;
                             $templateCache.put($attr.modInclude, template);
                         }
-
                         $element.html(ctrl.template);
                         $compile($element.contents())(scope);
                     }
@@ -486,7 +489,7 @@
         //modified include readingreading cintents and use it as inline template... #400
         .directive('modInclude', [
             '$http', '$templateCache', '$anchorScroll', '$animate', '$compile',
-            function ($http, $templateCache, $anchorScroll, $animate, $compile) {
+            function($http, $templateCache, $anchorScroll, $animate, $compile) {
                 return {
                     restrict: 'A',
                     priority: 400,
@@ -495,36 +498,52 @@
                     //template: '<p>foo</p>',
                     controller: angular.noop,
                     compile: function(element, attr) {
-                        return function (scope, $element, $attr, ctrl, $transclude) {
+                        return function(scope, $element, $attr, ctrl, $transclude) {
                             var currentScope,
                                 currentElement;
 
+                            var testTemplate = //'<li ng-repeat="item in data" mod-include="foo">' +
+                                'some text' +
+                                    '<p>testString from outer controller scope: {{testString}}</p>' +
+                                    '<p>' +
+                                    'prompt: {{item.prompt}}' +
+                                    '</p>' +
+                                    '<ul>' +
+                                    '<li ng-repeat="item in item.data" mod-include="foo"></li>' +
+                                    '</ul>' +
+                                    'some text beneath';
+                            //'</li>';
+
                             //scope.$watch(templateId, function() {
-                                var newScope = scope.$new();
-                                
-                                ctrl.template = //'<p>fgijfgijlfgij</p>';
-                                     $templateCache.get($attr.modInclude);
+                            var newScope = scope.$new();
 
-                                var clone = $transclude(newScope, function(clone) {
+                            ctrl.template = testTemplate;
+                                //$templateCache.get($attr.modInclude);
 
-                                    if (currentScope) {
-                                        currentScope.$destroy();
-                                        currentScope = null;
-                                    }
-                                    if (currentElement) {
-                                        $animate.leave(currentElement);
-                                        currentElement = null;
-                                    }
+                            //console.log(ctrl.template);
 
-                                    $animate.enter(clone, null, $element);
-                                });
+                            //console.log('transclude!');
 
-                                //$compile($element.contents())(newScope);
+                            var clone = $transclude(newScope, function(clone) {
 
-                                currentScope = newScope;
-                                currentElement = clone;
+                                if (currentScope) {
+                                    currentScope.$destroy();
+                                    currentScope = null;
+                                }
+                                if (currentElement) {
+                                    $animate.leave(currentElement);
+                                    currentElement = null;
+                                }
 
-                                //currentScope.$emit('$includeContentLoaded');
+                                $animate.enter(clone, null, $element);
+                            });
+
+                            //$compile($element.contents())(newScope);
+
+                            currentScope = newScope;
+                            currentElement = clone;
+
+                            //currentScope.$emit('$includeContentLoaded');
 
                             //});
                         };
@@ -537,25 +556,25 @@
         //collection as NOT isolated directive dealing with the next controller
         .directive('aCollection', [
             '$http', '$compile',
-            function ($http, $compile) {
+            function($http, $compile) {
                 return {
                     restrict: 'A',
                     //template: toolingHtml,
                     replace: false,
                     //scope: {}, //this should not be isolated here,as we will have conflicts with other isolated directive scopes.... or should it be? YES! we can then have it on another item! check how form controller is done in angular...
                     scope: true,
-                    controller:[
+                    controller: [
                         '$scope', '$element', '$http',
                         function($scope, $element, $http) {
 
                             $scope.random = Math.random();
 
                             $http.get('/foo/bar/api/gamesessions')
-                                .success(function (data, status, headers, config) {
+                                .success(function(data, status, headers, config) {
                                     $scope.base = data.collection;
                                     $scope.template = data.collection.template;
                                 })
-                                .error(function (data, status, headers, config) { });
+                                .error(function(data, status, headers, config) {});
 
                             //console.log($scope, 'controller $scope');
                         }
@@ -563,11 +582,11 @@
                     link: {
                         post: function(scope, element, attrs) {
                             //console.log(scope, 'directive post scope');
-                            
+
                         },
                         pre: function(scope, element, attrs) {
                             //console.log(scope, 'directive pre scope');
-                            
+
 
                             //scope.random = Math.floor((Math.random() * 6) + 1);
 
@@ -581,7 +600,7 @@
 
                             var contents = element.contents().remove();
                             var compiledContents = $compile(contents);
-                            compiledContents(scope, function (clone) {
+                            compiledContents(scope, function(clone) {
                                 element.append(clone);
                             });
                         }
@@ -608,10 +627,10 @@
                             elementContents = angular.element(defaultTemplate);
 
                         //this is the link function
-                        return function (scope, iElement, iAttr) {
+                        return function(scope, iElement, iAttr) {
                             if (!compiledContents)
                                 compiledContents = $compile(elementContents);
-                            compiledContents(scope, function (clone) {
+                            compiledContents(scope, function(clone) {
                                 iElement.append(clone);
                             });
                         };
@@ -628,7 +647,7 @@
                                     $scope.base = data.collection;
                                     $scope.template = data.collection.template;
                                 })
-                                .error(function (data, status, headers, config) { });
+                                .error(function(data, status, headers, config) {});
 
 
                         }
@@ -636,9 +655,6 @@
                 };
             }
         ])
-
-        
-
         .factory('gameSessionsService', [
             '$resource',
             function($resource) {
@@ -670,38 +686,32 @@
 
                 $scope.testString = 'The test string';
 
-                $scope.recursionTest = {
-                    prompt: 'a',
-                    data: [
+                $scope.testData = function() {
+                    return [
                         {
-                            prompt: 'b',
+                            prompt: 'my prompt says level 1 a',
                             data: [
-                              { prompt: 'c' },
-                              {
-                                  prompt: 'c',
-                                  data: [
-                                    { prompt: 'd' }
-                                  ]
-                              }
+                                {
+                                    prompt: 'my prompt says level 2 a'
+                                },
+                                {
+                                    prompt: 'my prompt says level 2 b',
+                                    data: [
+                                        {
+                                            prompt: 'level 3 a',
+                                            data: []
+                                        }
+                                    ]
+                                }
                             ]
                         },
                         {
-                            prompt: 'b',
-                            data: []
-                        
-                        }
-                    ],
-                    other: [
-                        {
-                            text: 'otherA',
-                            other: [
-                                {
-                                text: 'otherB',
-                                other: []
-                                }
+                            prompt: 'my prompt says level 1 b',
+                            data: [
+                                { prompt: 'wtf?' }
                             ]
                         }
-                    ]
+                    ];
                 };
 
                 $scope.items = [];
@@ -709,11 +719,11 @@
                 $scope.create = function() {
                     //console.log('$scope.create (should have template)');
 
-                    gameSessionsService.create({}, function (createResponse, createHeaderFn) {
+                    gameSessionsService.create({}, function(createResponse, createHeaderFn) {
                         //console.log('created');
                         //console.log(createHeaderFn('location'), 'header location is the result of 201');
 
-                        gameSessionsService.base(function (baseResponse) {
+                        gameSessionsService.base(function(baseResponse) {
                             items = baseResponse.collection.items;
                             $scope.items.splice(0, $scope.items.length);
                             for (ix in items)
