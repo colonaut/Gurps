@@ -474,14 +474,14 @@
                     restrict: 'A',
                     priority: -400,
                     require: 'modInclude',
-                    link: function(scope, $element, $attr, ctrl) {
-                        var template = $templateCache.get($attr.modInclude);
-                        if (!template) {
-                            template = $element[0].innerHTML;
-                            $templateCache.put($attr.modInclude, template);
-                        }
-                        $element.html(ctrl.template);
-                        $compile($element.contents())(scope);
+                    compile: function (element, attr) {
+                        if (!$templateCache.get(attr.modInclude))
+                            $templateCache.put(attr.modInclude, element[0].innerHTML);
+
+                        return function(scope, $element, $attr, ctrl) {
+                            $element.html(ctrl.template);
+                            $compile($element.contents())(scope);
+                        };
                     }
                 };
             }
@@ -497,35 +497,15 @@
                     transclude: 'element',
                     //template: '<p>foo</p>',
                     controller: angular.noop,
-                    compile: function(element, attr) {
+                    compile: function (element, attr) {
                         return function(scope, $element, $attr, ctrl, $transclude) {
                             var currentScope,
-                                currentElement;
+                                currentElement,
+                                newScope = scope.$new();
 
-                            var testTemplate = //'<li ng-repeat="item in data" mod-include="foo">' +
-                                'some text' +
-                                    '<p>testString from outer controller scope: {{testString}}</p>' +
-                                    '<p>' +
-                                    'prompt: {{item.prompt}}' +
-                                    '</p>' +
-                                    '<ul>' +
-                                    '<li ng-repeat="item in item.data" mod-include="foo"></li>' +
-                                    '</ul>' +
-                                    'some text beneath';
-                            //'</li>';
+                            ctrl.template = $templateCache.get($attr.modInclude);
 
-                            //scope.$watch(templateId, function() {
-                            var newScope = scope.$new();
-
-                            ctrl.template = testTemplate;
-                                //$templateCache.get($attr.modInclude);
-
-                            //console.log(ctrl.template);
-
-                            //console.log('transclude!');
-
-                            var clone = $transclude(newScope, function(clone) {
-
+                            var clone = $transclude(newScope, function (clone) {
                                 if (currentScope) {
                                     currentScope.$destroy();
                                     currentScope = null;
@@ -538,16 +518,9 @@
                                 $animate.enter(clone, null, $element);
                             });
 
-                            //$compile($element.contents())(newScope);
-
                             currentScope = newScope;
                             currentElement = clone;
-
-                            //currentScope.$emit('$includeContentLoaded');
-
-                            //});
                         };
-
                     }
                 };
             }
