@@ -10,7 +10,7 @@
         @*data-base-uri="foo/bar/api/gamesessions/"*@
         
         <section>
-            <h2>recursion directive</h2>
+            @*<h2>recursion directive ('E')</h2>
             <recursion current="{prompt: 'a', data:[{prompt: 'b', data:[{prompt: 'c'},{prompt: 'c', data:[{prompt: 'd'}]}]},{prompt: 'b', data:[]}]}">
                 <p>{{current.prompt}} (from directive template return function evaluating inline html)</p>
                 <ul>
@@ -18,11 +18,10 @@
                         <recursion current="item"></recursion>
                     </li>
                 </ul>
-            </recursion>
+            </recursion>*@
 
 
-<p>???</p>
-
+            <h2>recursion directive ('A')</h2>
             <div recursion="{prompt: 'a', data:[{prompt: 'b', data:[{prompt: 'c'},{prompt: 'c', data:[{prompt: 'd'}]}]},{prompt: 'b', data:[]}]}">
                 <p>{{recursion.prompt}} (from directive template return function evaluating inline html)</p>
                 <ul>
@@ -35,15 +34,39 @@
         </section>
 
 
-        @*      <section>
+        <section ng-init="data = [{prompt: 'b', data:[{prompt: 'c'},{prompt: 'c', data:[{prompt: 'd'}]}]},{prompt: 'b', data:[]}]">
+            <h2>mod-include directive ('A')</h2>
+
+            <ul>
+                <li ng-repeat="item in data" mod-include="foo">
+                    foo?
+                    <p>
+                        prompt: {{item.prompt}}
+                    </p>
+                    <p>ghfkdgh</p>
+
+                    hallo
+                    <ul>
+                        <li ng-repeat="item in item.data" mod-include="foo"></li>
+                    </ul>
+                </li>
+            </ul>
+        </section>
+
+
+        @*<section>
             <h3>collection directive: has no inline content:</h3>
-            <collection base="/foo/bar/api/gamesessions"></collection>       
+            <ecollection base="/foo/bar/api/gamesessions"></ecollection>       
         </section>*@
 
 
-        <section>
-            <h3>collection directive: has inline content:</h3>
-            <collection base="/foo/bar/api/gamesessions">
+        @*<section>
+            
+            <h3><input type="checkbox" ng-model="toggler"/>collection directive: has inline content:</h3>
+
+            
+
+            <div a-collection="/foo/bar/api/gamesessions" ng-if="toggler">
                 <p>I am inline!</p>
                 <p>random: {{random}}</p>
                 <p>version: {{base.version}}</p>
@@ -52,33 +75,39 @@
                     
                 </ul>
 
-                <recursion current="base.template">
+                <div recursion="base.template">
+                    
+                <p>version: {{base.version}}</p>
+
                     <ul>
-                        <li ng-repeat="item in current.data">
-                            {{item.prompt}} ({{item.prompt}})
+                        <li ng-repeat="current in recursion.data">
+                    
+                            <div ng-if="current.hasOwnProperty('value')">
+                                <label>{{current.prompt}}</label>
+                                <input type="text" name="current.name"></input>
+                                <div recursion="current"></div>
+                            </div>
+
+                            <div ng-if="current.hasOwnProperty('objects')">
+                                <label>{{current.prompt}}</label>
+                                <div recursion="current"></div>
+                            </div>
+
+
+
+                            <p>object: {{current.hasOwnProperty('object')}}</p>
+
+
+                            <p>values: {{current.hasOwnProperty('values')}}</p>
+
+
                             
-
-                            rec. 1 (if objects)
-                            <recursion current="item" ng-if="data.objetcs"></recursion>
-
-                            rec.2 (if object)
-                            <recursion current="item" ng.if="data.object"></recursion>
                         </li>
                     </ul>                    
-                </recursion>
 
 
-                @*<ul>
-                    <li ng-repeat="data in base.template.data">
-                        <label>{{data.prompt}}</label>
-                        <input type="text" name="data.name"></input>
-                    </li>
-                </ul>*@
-
-
-            </collection>
-            <p>.</p> 
-        </section>
+            </div>            
+        </section>*@
 
 
         @*<section>
