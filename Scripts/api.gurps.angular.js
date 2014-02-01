@@ -466,19 +466,22 @@
             }
         ])
 
-        //modified include readingreading cintents and use it as inline template... #-400
-        .directive('modInclude', [
+        //modified include reading contents and use it as inline template... #-400
+        .directive('inlineInclude', [
             '$compile', '$templateCache',
             function($compile, $templateCache) {
                 return {
                     restrict: 'A',
-                    priority: -400,
-                    require: 'modInclude',
+                    priority: -800,
+                    require: 'inlineInclude',
                     compile: function (element, attr) {
                         if (!$templateCache.get(attr.modInclude))
-                            $templateCache.put(attr.modInclude, element[0].innerHTML);
+                            $templateCache.put(attr.modInclude, element.html());
 
-                        return function(scope, $element, $attr, ctrl) {
+                        var contents =
+                            element.contents().remove(); // we need to do this!
+
+                        return function (scope, $element, $attr, ctrl) {
                             $element.html(ctrl.template);
                             $compile($element.contents())(scope);
                         };
@@ -487,7 +490,7 @@
             }
         ])
         //modified include readingreading cintents and use it as inline template... #400
-        .directive('modInclude', [
+        .directive('inlineInclude', [
             '$http', '$templateCache', '$anchorScroll', '$animate', '$compile',
             function($http, $templateCache, $anchorScroll, $animate, $compile) {
                 return {
@@ -495,7 +498,6 @@
                     priority: 400,
                     terminal: true,
                     transclude: 'element',
-                    //template: '<p>foo</p>',
                     controller: angular.noop,
                     compile: function (element, attr) {
                         return function(scope, $element, $attr, ctrl, $transclude) {
@@ -504,7 +506,7 @@
                                 newScope = scope.$new();
 
                             ctrl.template = $templateCache.get($attr.modInclude);
-
+                            
                             var clone = $transclude(newScope, function (clone) {
                                 if (currentScope) {
                                     currentScope.$destroy();
@@ -528,8 +530,8 @@
 
         //collection as NOT isolated directive dealing with the next controller
         .directive('aCollection', [
-            '$http', '$compile',
-            function($http, $compile) {
+            '$compile',
+            function($compile) {
                 return {
                     restrict: 'A',
                     //template: toolingHtml,
@@ -555,7 +557,7 @@
                     link: {
                         post: function(scope, element, attrs) {
                             //console.log(scope, 'directive post scope');
-
+                            
                         },
                         pre: function(scope, element, attrs) {
                             //console.log(scope, 'directive pre scope');
@@ -659,33 +661,36 @@
 
                 $scope.testString = 'The test string';
 
-                $scope.testData = function() {
-                    return [
-                        {
-                            prompt: 'my prompt says level 1 a',
-                            data: [
-                                {
-                                    prompt: 'my prompt says level 2 a'
-                                },
-                                {
-                                    prompt: 'my prompt says level 2 b',
-                                    data: [
-                                        {
-                                            prompt: 'level 3 a',
-                                            data: []
-                                        }
-                                    ]
-                                }
-                            ]
-                        },
-                        {
-                            prompt: 'my prompt says level 1 b',
-                            data: [
-                                { prompt: 'wtf?' }
-                            ]
-                        }
-                    ];
-                };
+                $scope.testData = [
+                    {
+                        prompt: 'my prompt says level 1 a',
+                        data: [
+                            {
+                                prompt: 'my prompt says level 2 a'
+                                //, data: []
+                            },
+                            {
+                                prompt: 'my prompt says level 2 b',
+                                data: [
+                                    {
+                                        prompt: 'level 3 a'
+                                        //,data: []
+                                    }
+                                ]
+                            }
+                        ]
+                    },
+                    {
+                        prompt: 'my prompt says level 1 b',
+                        data: [
+                            {
+                                prompt: 'wtf?'
+                                //,data:[]
+                            }
+                        ]
+                    }
+                ];
+                
 
                 $scope.items = [];
 
