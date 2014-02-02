@@ -32,7 +32,7 @@
         </section>*@
 
 
-        <section>
+        @*<section>
             <h3><input type="checkbox" ng-model="toggle1"/> mod-include directive ('A')</h3>
 
             <ul>
@@ -51,46 +51,56 @@
 
                 </li>
             </ul>
-        </section>
+        </section>*@
 
 
-        @*<section>
+        <section>
             <h3><input type="checkbox" ng-model="toggler"/>collection directive: has inline content:</h3>
 
-            <div a-collection="/foo/bar/api/gamesessions" ng-if="toggler">
+            <div class="collection" a-collection="/foo/bar/api/gamesessions" ng-if="toggler">
 
                 <p>I am inline!</p>
                 <p>random: {{random}}</p>
                 <p>version: {{base.version}}</p>
 
-                <ul>
-                    <li ng-repeat="item in base.template.data" mod-include="tmpl1">
+                <ul class="template-data">
+                    <li class="item" ng-repeat="item in base.template.data"
+                        inline-include="collection-json-template">
                     
-                        <div ng-if="item.hasOwnProperty('value')">
-                            <label>{{item.prompt}}</label>
-                            <input type="text" name="current.name"></input>                 
-                        </div>
+                        <div class="typeof" ng-switch="getDataItemType(item)">
 
-                        <div ng-if="1==1">
-                            <label>{{item.prompt}}</label>
-                            <ul>
-                                <li ng-repeat="item in item.data" mod-include="tmpl1"></li>
-                            </ul>
-                        </div>
+                            the data type of this: {{getDataItemType(item)}}
 
-                        <div ng-if="item.hasOwnProperty('values')">
-                            <label>{{item.prompt}}</label>                            
-                        </div>
+                            <div class="value" ng-switch-when="value">
+                                <label>{{item.prompt}}</label>
+                                <input type="text" name="{{item.name}}"></input>                 
+                            </div>
 
-                        <div ng-if="item.hasOwnProperty('objects')">
-                            <label>{{item.prompt}}</label>                            
+                            <div class="values" ng-switch-when="values">
+                                <label>{{item.prompt}}</label>                            
+                            </div>
+
+                            <div class="object" ng-switch-when="object">
+                                <label>{{item.prompt}}</label>
+                                <ul>
+                                    <li ng-repeat="item in item.data"
+                                        inline-include="collection-json-templat"></li>
+                                </ul>
+                            </div>
+
+                            <div class="objects" ng-switch-when="objects">
+                                <label>{{item.prompt}}</label>                            
+                            </div>
+
+                            <p class="not-supported" ng-switch-default>No supported data item type found.</p>
+
                         </div>
 
                     </li>
                 </ul>
 
             </div>     
-        </section>*@
+        </section>
 
 
         @*<section>

@@ -478,7 +478,7 @@
                         if (!$templateCache.get(attr.modInclude))
                             $templateCache.put(attr.modInclude, element.html());
 
-                        var contents =
+                        //var contents =
                             element.contents().remove(); // we need to do this!
 
                         return function (scope, $element, $attr, ctrl) {
@@ -532,6 +532,8 @@
         .directive('aCollection', [
             '$compile',
             function($compile) {
+                var dataItemTypes = ['objects', 'object', 'options', 'values', 'value'];
+                
                 return {
                     restrict: 'A',
                     //template: toolingHtml,
@@ -541,8 +543,16 @@
                     controller: [
                         '$scope', '$element', '$http',
                         function($scope, $element, $http) {
+                            var ix;
 
                             $scope.random = Math.random();
+
+                            $scope.getDataItemType = function(property) {
+                                for (ix in dataItemTypes)
+                                    if (property.hasOwnProperty(dataItemTypes[ix]))
+                                        return dataItemTypes[ix];
+                                return null;
+                            };
 
                             $http.get('/foo/bar/api/gamesessions')
                                 .success(function(data, status, headers, config) {
