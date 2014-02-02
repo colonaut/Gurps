@@ -532,34 +532,40 @@
         .directive('aCollection', [
             '$compile',
             function($compile) {
-                var dataItemTypes = ['objects', 'object', 'options', 'values', 'value'];
-                
+                var dataItemTypes = ['values', 'value', 'options', 'select', 'object', 'objects'],
+                    ix;
+                /**/
+                function getDataItemType(property) {
+                    for (ix in dataItemTypes)
+                        if (property.hasOwnProperty(dataItemTypes[ix]))
+                            return dataItemTypes[ix];
+                    return null;
+                };
+                /* the directive */
                 return {
                     restrict: 'A',
-                    //template: toolingHtml,
                     replace: false,
-                    //scope: {}, //this should not be isolated here,as we will have conflicts with other isolated directive scopes.... or should it be? YES! we can then have it on another item! check how form controller is done in angular...
                     scope: true,
                     controller: [
                         '$scope', '$element', '$http',
                         function($scope, $element, $http) {
-                            var ix;
-
+                            
                             $scope.random = Math.random();
 
                             $scope.getDataItemType = function(property) {
-                                for (ix in dataItemTypes)
-                                    if (property.hasOwnProperty(dataItemTypes[ix]))
-                                        return dataItemTypes[ix];
-                                return null;
+                                return getDataItemType(property);
                             };
 
                             $http.get('/foo/bar/api/gamesessions')
                                 .success(function(data, status, headers, config) {
                                     $scope.base = data.collection;
                                     $scope.template = data.collection.template;
+
+                                    console.log(data.collection.template, 'the template from the collection ($http)');
+
                                 })
-                                .error(function(data, status, headers, config) {});
+                                .error(function(data, status, headers, config) {
+                                });
 
                             //console.log($scope, 'controller $scope');
                         }

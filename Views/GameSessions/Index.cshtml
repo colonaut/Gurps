@@ -63,41 +63,55 @@
                 <p>random: {{random}}</p>
                 <p>version: {{base.version}}</p>
 
-                <ul class="template-data">
-                    <li class="item" ng-repeat="item in base.template.data"
-                        inline-include="collection-json-template">
+                <form novalidate="" class="template">
+                    <ul class="data">
+                        <li class="item" ng-repeat="item in base.template.data"
+                            inline-include="collection-json-template">
                     
-                        <div class="typeof" ng-switch="getDataItemType(item)">
+                            <div class="typeof" ng-switch="getDataItemType(item)">
 
-                            the data type of this: {{getDataItemType(item)}}
+                                <div class="value" ng-switch-when="value">
+                                    <label>{{item.prompt}}</label>
+                                    <input type="text" name="{{item.name}}"></input>
+                                    DISPLAY FINISHED             
+                                </div>
 
-                            <div class="value" ng-switch-when="value">
-                                <label>{{item.prompt}}</label>
-                                <input type="text" name="{{item.name}}"></input>                 
+                                <div class="values" ng-switch-when="values">
+                                    <label>{{item.prompt}}</label>
+                                    THIS IS TODO                          
+                                </div>
+
+                                <div class="object" ng-switch-when="object">
+                                    <label>{{item.prompt}}</label>
+                                    <ul>
+                                        <li ng-repeat="item in item.data"
+                                            inline-include="collection-json-template"></li>
+                                    </ul>
+                                </div>
+
+                                <div class="objects" ng-switch-when="objects">
+                                    <label>{{item.prompt}}</label>
+                                    <button ng-click="add">Add</button> 
+                                    <ul>
+                                        <li ng-repeat="item in item.data"
+                                            inline-include="collection-json-template"></li>
+                                    </ul>
+                                                                   
+                                </div>
+
+                                <p class="not-supported" ng-switch-default>No supported data item type found.</p>
+
                             </div>
 
-                            <div class="values" ng-switch-when="values">
-                                <label>{{item.prompt}}</label>                            
-                            </div>
+                        </li>
+                    </ul>
 
-                            <div class="object" ng-switch-when="object">
-                                <label>{{item.prompt}}</label>
-                                <ul>
-                                    <li ng-repeat="item in item.data"
-                                        inline-include="collection-json-templat"></li>
-                                </ul>
-                            </div>
+                    <div class="tools">
+                        <input type="reset" value="clear"></input>
+                        <input type="submit" value="submit"></input>
+                    </div>
 
-                            <div class="objects" ng-switch-when="objects">
-                                <label>{{item.prompt}}</label>                            
-                            </div>
-
-                            <p class="not-supported" ng-switch-default>No supported data item type found.</p>
-
-                        </div>
-
-                    </li>
-                </ul>
+                </form>
 
             </div>     
         </section>
