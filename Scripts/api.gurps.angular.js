@@ -533,14 +533,38 @@
             '$compile',
             function($compile) {
                 var dataItemTypes = ['values', 'value', 'options', 'select', 'object', 'objects'],
-                    ix;
+                    ix, keyx;
                 /**/
-                function getDataItemType(property) {
+                function getDataItemType(dataItem) {
                     for (ix in dataItemTypes)
-                        if (property.hasOwnProperty(dataItemTypes[ix]))
+                        if (dataItem.hasOwnProperty(dataItemTypes[ix]))
                             return dataItemTypes[ix];
                     return null;
                 };
+
+                function destructure(data) {
+                    var result = {};
+                    for (ix in data) {
+                        keyx = data[ix].name;
+
+                        console.log(keyx);
+
+                        //switch (getDataItemType(data[ix])) {
+                        //    case 'value':
+                        //        result[keyx] = null;
+                        //        break;
+                        //    case 'object':
+                        //        result[keyx] = destructure(data[ix].data);
+                        //        break;
+                        //    case 'values':
+                        //    case 'objects':
+                        //        result[keyx] = [];
+                        //        break;
+
+                        //}
+                    }
+                    return result;
+                }
                 /* the directive */
                 return {
                     restrict: 'A',
@@ -556,6 +580,24 @@
                                 return getDataItemType(property);
                             };
 
+
+                            //add object to objects collection of data structure
+                            $scope.addObject = function (objects, data) {
+                                objects.push({ data: angular.copy(data) });
+                            };
+
+                            $scope.removeObject = function (objects, objectItem) {
+                                objects.splice(objects.indexOf(objectItem), 1);
+                            };
+
+                            //post a filled template (TODO: required...)
+                            $scope.create = function() {
+                                console.log('post the template now...');
+                                console.log($scope.template, "template to post");
+                            };
+
+                            //load data...
+                            console.log('load collection data');
                             $http.get('/foo/bar/api/gamesessions')
                                 .success(function(data, status, headers, config) {
                                     $scope.base = data.collection;
@@ -563,39 +605,13 @@
 
                                     console.log(data.collection.template, 'the template from the collection ($http)');
 
+                                    console.log(destructure(data.collection.template.data), 'destructured template (entity)');
                                 })
                                 .error(function(data, status, headers, config) {
                                 });
 
-                            //console.log($scope, 'controller $scope');
                         }
-                    ],
-                    link: {
-                        post: function(scope, element, attrs) {
-                            //console.log(scope, 'directive post scope');
-                            
-                        },
-                        pre: function(scope, element, attrs) {
-                            //console.log(scope, 'directive pre scope');
-
-
-                            //scope.random = Math.floor((Math.random() * 6) + 1);
-
-                            //$http.get('/foo/bar/api/gamesessions')
-                            //    .success(function (data, status, headers, config) {
-                            //        scope.base = data.collection;
-                            //        scope.template = data.collection.template;
-                            //    })
-                            //    .error(function (data, status, headers, config) { });
-
-
-                            var contents = element.contents().remove();
-                            var compiledContents = $compile(contents);
-                            compiledContents(scope, function(clone) {
-                                element.append(clone);
-                            });
-                        }
-                    }
+                    ]                    
                 };
             }
         ])

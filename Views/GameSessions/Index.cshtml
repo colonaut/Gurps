@@ -6,7 +6,7 @@
 }
 
 <section>
-    <form ng-controller="GameSessionsController" name="gameSessions">
+    <div ng-controller="GameSessionsController" name="gameSessions">
         @*data-base-uri="foo/bar/api/gamesessions/"*@
         
         @*<section>
@@ -54,16 +54,31 @@
         </section>*@
 
 
+        @*<section>
+            <h2> Game Sessions from server</h2>
+            <ul>
+                <li ng-repeat="session in items">
+                    <h2>{{session.date}}</h2>
+                </li>
+            </ul>
+        
+            <button>Game Session (server)</button>
+        </section>*@
+       
+
         <section>
             <h3><input type="checkbox" ng-model="toggler"/>collection directive: has inline content:</h3>
 
             <div class="collection" a-collection="/foo/bar/api/gamesessions" ng-if="toggler">
+                
+                <p>testString from outer controller scope: {{testString}}</p>
 
                 <p>I am inline!</p>
                 <p>random: {{random}}</p>
                 <p>version: {{base.version}}</p>
 
-                <form novalidate="" class="template">
+                <div ng-form name="template">
+                    
                     <ul class="data">
                         <li class="item" ng-repeat="item in base.template.data"
                             inline-include="collection-json-template">
@@ -72,7 +87,7 @@
 
                                 <div class="value" ng-switch-when="value">
                                     <label>{{item.prompt}}</label>
-                                    <input type="text" name="{{item.name}}"></input>
+                                    <input type="text" name="{{item.name}}" ng-model="item.value"/>
                                     DISPLAY FINISHED             
                                 </div>
 
@@ -91,12 +106,22 @@
 
                                 <div class="objects" ng-switch-when="objects">
                                     <label>{{item.prompt}}</label>
-                                    <button ng-click="add">Add</button> 
-                                    <ul>
-                                        <li ng-repeat="item in item.data"
+                                    [<a href="" ng-click="addObject(item.objects, item.data)">add</a>]
+                                    
+                                    <ul ng-repeat="object in item.objects">
+                                        <li ng-repeat="item in object.data"
                                             inline-include="collection-json-template"></li>
+                                        [<a href="" ng-click="removeObject(item.objects, object)">remove</a>]
                                     </ul>
                                                                    
+                                </div>
+
+                                <div ng-switch-when="select">
+                                    TODO: select
+                                </div>
+
+                                <div ng-switch-when="select">
+                                    TODO: options
                                 </div>
 
                                 <p class="not-supported" ng-switch-default>No supported data item type found.</p>
@@ -106,30 +131,18 @@
                         </li>
                     </ul>
 
+
                     <div class="tools">
-                        <input type="reset" value="clear"></input>
-                        <input type="submit" value="submit"></input>
+                        <input type="reset"></input>
+                        <input type="submit" ng-click="create($event)"></input>
                     </div>
 
-                </form>
+                </div>
 
             </div>     
         </section>
 
-
-        @*<section>
-            <h2> Game Sessions from server</h2>
-            <ul>
-                <li ng-repeat="session in items">
-                    <h2>{{session.date}}</h2>
-                </li>
-            </ul>
-        
-            <button ng-click="create()">Game Session (server)</button>
-        </section>*@
-       
-
-    </form>
+    </div>
 </section>
 
 
