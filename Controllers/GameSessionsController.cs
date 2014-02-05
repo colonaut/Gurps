@@ -121,10 +121,12 @@ namespace MedienKultur.Gurps.Controllers
         }
 
         //POST
+        int tmpId = 1;
         [CollectionJsonRoute(Is.Create, "api/gamesessions")]
         public CollectionJsonResult<GameSession> Create(CollectionJsonReader<GameSession> reader)
         {
-            var entity = new GameSession();
+            
+            var entity = new GameSession {SlogId = 1};
             _ravenSession.Store(entity);
 
             return new CollectionJsonResult<GameSession>(entity);

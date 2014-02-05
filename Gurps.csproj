@@ -142,6 +142,7 @@
     <Compile Include="App_Start\StructuremapMvcRavenDbUnitOfWork.cs" />
     <Compile Include="Controllers\ArticlesController.cs" />
     <Compile Include="Controllers\CharactersController.cs" />
+    <Compile Include="Controllers\SlogController.cs" />
     <Compile Include="Controllers\GameSessionsController.cs" />
     <Compile Include="Controllers\JUploadController.cs" />
     <Compile Include="DependencyResolution\IoC.cs" />

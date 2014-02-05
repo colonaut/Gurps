@@ -11,7 +11,6 @@ namespace MedienKultur.Gurps.Models
         public GameSession()
         {
             Characters = new List<Character>();
-            SlogEntries = new List<SlogEntry>();
         }
 
         public int Id { get; set; }
@@ -20,29 +19,51 @@ namespace MedienKultur.Gurps.Models
         public GameSetting Setting { get; set; }
         
         public GameMaster GameMaster { get; set; }
+        
         public IEnumerable<Character> Characters { get; set; }
 
-        [CollectionJsonConcreteType(typeof(GurpsCharacter))]
-        public IEnumerable<SlogEntry> SlogEntries { get; set; }
+        [CollectionJsonReference(typeof(Slog))]
+        public int SlogId { get; set; }
 
     }
 
 
-
-    public class SlogEntry
+    public class Slog
     {
-        public SlogEntry()
+        public Slog()
         {
             
         }
 
-        public string Data { get; set; }
-        public string Author { get; set; }
-        public AlienDate AlienDate { get; set; }
+        public int Id { get; set; }
+        public GameSessionReference GameSessionRef { get; set; }
+        public List<SlogEntry> Entries { get; set; }
+
+
+        public class GameSessionReference
+        {
+            public int Id { get; set; }
+        }
+
+        public class SlogEntry
+        {
+            public int Id { get; set; }
+            public DateTimeOffset CreatedAt { get; set; }
+            public string AlienDateTime { get; set; }
+
+            public string Body { get; set; }
+            public string Author { get; set; }
+            
+
+        }
 
     }
 
 
+    
+
+
+    
     public class GameSetting
     {
         public string Name { get; set; }

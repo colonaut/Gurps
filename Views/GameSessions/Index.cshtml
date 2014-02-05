@@ -7,63 +7,18 @@
 
 <section>
     <div ng-controller="GameSessionsController" name="gameSessions">
-        @*data-base-uri="foo/bar/api/gamesessions/"*@
-        
-        @*<section>
-            <h2>recursion directive ('E')</h2>
-            <recursion current="{prompt: 'a', data:[{prompt: 'b', data:[{prompt: 'c'},{prompt: 'c', data:[{prompt: 'd'}]}]},{prompt: 'b', data:[]}]}">
-                <p>{{current.prompt}} (from directive template return function evaluating inline html)</p>
-                <ul>
-                    <li ng-repeat="item in current.data">
-                        <recursion current="item"></recursion>
-                    </li>
-                </ul>
-            </recursion>
 
-            <h2>recursion directive ('A')</h2>
-            <div recursion="{prompt: 'a', data:[{prompt: 'b', data:[{prompt: 'c'},{prompt: 'c', data:[{prompt: 'd'}]}]},{prompt: 'b', data:[]}]}">
-                <p>{{recursion.prompt}} (from directive template return function evaluating inline html)</p>
-                <ul>
-                    <li ng-repeat="item in recursion.data">
-                        <div recursion="item"></div>
-                    </li>
-                </ul>
-            </div>
-        </section>*@
-
-
-        @*<section>
-            <h3><input type="checkbox" ng-model="toggle1"/> mod-include directive ('A')</h3>
-
-            <ul>
-                <li ng-repeat="item in testData" inline-include="foo">
-                    
-                    <span>some text</span>
-                    <p ng-if="1==1">
-                        prompt: {{item.prompt}}
-                    </p>
-
-                    <ul>
-                        <li ng-repeat="item in item.data" inline-include="foo"></li>
-                    </ul>
-
-                    <span>some text beneath</span>
-
-                </li>
-            </ul>
-        </section>*@
-
-
-        @*<section>
+        <section>
             <h2> Game Sessions from server</h2>
+            
+            <a href ng-click="create()">Game Session anlegen und zurückbekommen (server)</a>
+            
             <ul>
                 <li ng-repeat="session in items">
                     <h2>{{session.date}}</h2>
                 </li>
-            </ul>
-        
-            <button>Game Session (server)</button>
-        </section>*@
+            </ul>                    
+        </section>
        
 
         <section>
@@ -140,6 +95,7 @@
                 </div>
 
             </div>     
+
         </section>
 
     </div>

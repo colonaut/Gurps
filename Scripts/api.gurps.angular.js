@@ -407,65 +407,6 @@
         }]);
 
     angular.module('gameSessionModule', ['alienDateModule'])
-        //$recursion factory
-        .factory('$recursion', [
-            '$compile', function($compile) {
-                return {
-                    compile: function(element, attr) {
-                        var inlineTemplate = element[0].innerHTML.toString();
-                        var contents = element.contents().remove();
-                        var compiledContents;
-                        return function(scope, iElement, iAttr) {
-
-                            //console.log(scope),
-                            //console.log(iAttr);
-
-                            //scope.recursion = scope.$eval(attr.recursion);
-                            //scope.recur = scope.$eval(iAttr.recursion); 
-
-                            scope.inlineTemplate = scope.$parent.inlineTemplate || inlineTemplate;
-                            if (!compiledContents)
-                            //compiledContents = $compile(contents);
-                                compiledContents = $compile(angular
-                                    .element('<div>' + scope.inlineTemplate + '</div>')
-                                    .contents());
-
-                            compiledContents(scope, function(clone) {
-                                iElement.append(clone);
-                            });
-                        };
-                    }
-                };
-            }
-        ])
-        //recursion directive
-        .directive('recursion', [
-            '$compile', '$recursion',
-            function($compile, $recursion) {
-                return {
-                    restrict: "AE",
-                    scope: {
-                        current: '=',
-                        recursion: '='
-                    },
-                    //template: '<p>{{current.prompt}} (from directive template)</p>' +
-                    //        '<ul>' +
-                    //        '<li ng-repeat="data in current.data">' +
-                    //        '   <recursion current="data"></recursion>' +
-                    //        '</li>' +
-                    //        '</ul>',
-                    compile: function(element, attr) {
-
-                        //console.log(attr);
-                        //console.log(a);
-
-                        return $recursion.compile(element, attr);
-                    }
-
-                };
-            }
-        ])
-
         //modified include reading contents and use it as inline template... #-400
         .directive('inlineInclude', [
             '$compile', '$templateCache',
