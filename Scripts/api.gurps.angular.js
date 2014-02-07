@@ -539,7 +539,7 @@
 
                             //load data...
                             console.log('load collection data');
-                            $http.get('/foo/bar/api/gamesessions')
+                            $http.get('/api/gamesessions')
                                 .success(function(data, status, headers, config) {
                                     $scope.base = data.collection;
                                     $scope.template = data.collection.template;
@@ -590,7 +590,7 @@
 
                             $scope.random = Math.floor((Math.random() * 6) + 1);
 
-                            $http.get('/foo/bar/api/gamesessions')
+                            $http.get('/api/gamesessions')
                                 .success(function(data, status, headers, config) {
                                     $scope.base = data.collection;
                                     $scope.template = data.collection.template;
@@ -607,7 +607,7 @@
             '$resource',
             function($resource) {
 
-                var ngr = $resource('foo/bar/api/gamesessions/:id', {}, {
+                var ngr = $resource('api/gamesessions/:id', {}, {
                     query: { method: 'QUERY', params: {}, isArray: false },
                     get: { method: 'GET', params: {}, isArray: false },
                     post: { method: 'POST', params: {}, isArray: false },
