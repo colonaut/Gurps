@@ -10,21 +10,32 @@ namespace MedienKultur.Gurps.Models
     {
         public GameSession()
         {
-            Characters = new List<Character>();
+            Characters = new List<CharacterReference>();
         }
 
         public int Id { get; set; }
         
-        public DateTime Date { get; set; }
+        public DateTimeOffset CreatedAt { get; set; }
+
+        public DateTimeOffset PlayedAt { get; set; }
+
         public GameSetting Setting { get; set; }
         
         public GameMaster GameMaster { get; set; }
         
-        public IEnumerable<Character> Characters { get; set; }
+        public IEnumerable<CharacterReference> Characters { get; set; }
 
         [CollectionJsonReference(typeof(Slog))]
         public int SlogId { get; set; }
 
+
+        public class CharacterReference
+        {
+            [CollectionJsonReference(typeof(Character))]
+            public int CharacterId { get; set; }
+            
+            public DateTimeOffset PlayedAt { get; set; }
+        }
     }
 
 
@@ -36,15 +47,13 @@ namespace MedienKultur.Gurps.Models
         }
 
         public int Id { get; set; }
-        public GameSessionReference GameSessionRef { get; set; }
+
+        [CollectionJsonReference(typeof(GameSession))]
+        public int GameSessionId { get; set; }
+        
         public List<SlogEntry> Entries { get; set; }
 
-
-        public class GameSessionReference
-        {
-            public int Id { get; set; }
-        }
-
+        
         public class SlogEntry
         {
             public int Id { get; set; }

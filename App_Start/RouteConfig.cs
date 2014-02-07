@@ -32,11 +32,11 @@ namespace MedienKultur.Gurps.App_Start
             var attempt1DebugDictionary = SingletonFactory<UrlInfoCollection>.Instance
                 .Find(typeof(GurpsCharacter));
 
-            var attempt2DebugDictionary = SingletonFactory<UrlInfoCollection>.Instance
-                .Find<RouteInfo>(typeof(GurpsCharacter));
-
             var attempt3DebugDictionary = SingletonFactory<UrlInfoCollection>.Instance
                 .Find<RouteInfo>(typeof(GameSession));
+
+            var attempt4DebugDictionary = SingletonFactory<UrlInfoCollection>.Instance
+                .Find<RouteInfo>(typeof(Slog));
 
             //********
 

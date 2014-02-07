@@ -68,7 +68,7 @@ namespace MedienKultur.Gurps.Controllers
         #endregion
 
         //a link
-        [CollectionJsonRoute(Is.LinkForBase, "api/gamesessions/feed")]
+        [CollectionJsonRoute(Is.BaseLink, "api/gamesessions/feed")]
         public CollectionJsonResult<GameSession> GetNews()
         {
             var models = _ravenSession.Query<GameSession>()
@@ -77,8 +77,8 @@ namespace MedienKultur.Gurps.Controllers
             return new CollectionJsonResult<GameSession>(models);
         }
 
-        //a link
-        [CollectionJsonRoute(Is.LinkForItem, "api/gamesessions/{id}/avatar")]
+        //an item link
+        [CollectionJsonRoute(Is.ItemLink, "api/gamesessions/{id}/avatar")]
         public CollectionJsonResult<GameSession> GetImage(int id)
         {
             var model = _ravenSession.Load<GameSession>(id);
@@ -97,11 +97,22 @@ namespace MedienKultur.Gurps.Controllers
         }
 
         //GET query
-        [CollectionJsonTask(Do.Query, "api/gamesessions/search")] //querystring works just with method signature
-        public CollectionJsonResult<GameSession> SearchQuery(string dateTime)
+        [CollectionJsonRoute(Is.Query, "api/gamesessions/search")] //querystring works just with method signature
+        public CollectionJsonResult<GameSession> ByDate(string dateTime)
         {
             var models = _ravenSession.Query<GameSession>()
                 .Customize(q => q.WaitForNonStaleResultsAsOfLastWrite());
+            //.AsEnumerable();
+            return new CollectionJsonResult<GameSession>(models);
+        }
+
+        //query by character id
+        [CollectionJsonRoute(Is.Query, "api/gamesessions/search")]
+        public CollectionJsonResult<GameSession> ByCharacter(int character)
+        {
+            var models = _ravenSession.Query<GameSession>()
+                .Customize(q => q.WaitForNonStaleResultsAsOfLastWrite())
+                .Where(s => s.Characters.Any(c => c.CharacterId == character));
             //.AsEnumerable();
             return new CollectionJsonResult<GameSession>(models);
         }
