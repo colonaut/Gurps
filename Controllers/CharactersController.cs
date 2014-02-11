@@ -11,10 +11,9 @@ using Raven.Client;
 
 namespace MedienKultur.Gurps.Controllers
 {
-    
+    [RoutePrefix("api/characters")]
     public class CharactersController : Controller
     {
-        const string BaseUri = "api/characters";
         readonly IDocumentSession _ravenSession;
 
         public CharactersController(IDocumentSession ravenSession)
@@ -22,63 +21,25 @@ namespace MedienKultur.Gurps.Controllers
             _ravenSession = ravenSession;
         }
 
-        #region RegisterRoutes()
-        internal static void RegisterRoutes(RouteCollection routes)
-        {
-            routes.IgnoreRoute("{resource}.axd/{*pathInfo}");
-
-            routes.MapRoute(
-                BaseUri + "/{id} DELETE",
-                BaseUri + "/{id}",
-                new {controller = "Characters", action = "DeleteCharacter"},
-                new {httpMethod = new HttpMethodConstraint("DELETE")}
-            );
-
-            routes.MapRoute(
-                BaseUri + "/{id} PUT",
-                BaseUri + "/{id}",
-                new {controller = "Characters", action = "UpdateCharacter"},
-                new {httpMethod = new HttpMethodConstraint("PUT")}
-            );
-
-            //routes.MapRoute(
-            //    BaseUri + "/{id} GET",
-            //    BaseUri + "/{id}",
-            //    new {controller = "Characters", action = "Get"},
-            //    new {httpMethod = new HttpMethodConstraint("GET")}
-            //);
-
-            routes.MapRoute(
-                BaseUri + " GET",
-                BaseUri + "",
-                new {controller = "Characters", action = "Query"},
-                new {httpMethod = new HttpMethodConstraint("GET")}
-                );
-
-            //routes.MapRoute(
-            //    BaseUri + "/{id} POST",
-            //    BaseUri + "/{id}",
-            //    new {controller = "Characters", action = "AddCharacter"},
-            //    new {httpMethod = new HttpMethodConstraint("POST")}
-            //);
-
-            routes.MapRoute(
-                BaseUri + " POST",
-                BaseUri,
-                new {controller = "Characters", action = "AddCharacter"},
-                new {httpMethod = new HttpMethodConstraint("POST")}
-            );
-        }
-        #endregion
-
-
         public CollectionJsonResult<GurpsCharacter> Query()
         {
             var models = _ravenSession.Query<GurpsCharacter>();
             return new CollectionJsonResult<GurpsCharacter>(models);
         }
 
-        [CollectionJsonRoute(Is.Item, BaseUri + "/{id}", RouteName = "MyName")]
+
+        //collection of characters
+        [CollectionJsonRoute(Is.Base, RouteName = "CharacterCollection")]
+        public CollectionJsonResult<GurpsCharacter> Get()
+        {
+            var models = _ravenSession.Query<GurpsCharacter>()
+                .Customize(q => q.WaitForNonStaleResults());
+            
+            return new CollectionJsonResult<GurpsCharacter>(models);
+        }
+
+        //collection of 1 character
+        [CollectionJsonRoute(Is.Item, "{id}", RouteName = "Character")]
         public CollectionJsonResult<GurpsCharacter> Get(int id)
         {
             var model = _ravenSession.Load<GurpsCharacter>(id);
@@ -90,6 +51,7 @@ namespace MedienKultur.Gurps.Controllers
 
             return new CollectionJsonResult<GurpsCharacter>(model);
         }
+
 
         //POST
         public HttpResponseMessage AddCharacter(CollectionJsonReader<GurpsCharacter> reader)

@@ -12,9 +12,9 @@ using Raven.Client;
 namespace MedienKultur.Gurps.Controllers
 {
     
+    [RoutePrefix("api/slogs")]
     public class SlogController : Controller
     {
-        const string BaseUri = "api/slog";
         readonly IDocumentSession _ravenSession;
 
         public SlogController(IDocumentSession ravenSession)
@@ -23,7 +23,7 @@ namespace MedienKultur.Gurps.Controllers
         }
 
 
-        [CollectionJsonRoute(Is.Base, BaseUri)]
+        [CollectionJsonRoute(Is.Base)]
         public CollectionJsonResult<Slog> Get()
         {
             //TODO: we need to support not getting items (CollectionJsonResult<>() empty signature)...
@@ -31,14 +31,14 @@ namespace MedienKultur.Gurps.Controllers
             return new CollectionJsonResult<Slog>(models);
         }
         
-        [CollectionJsonRoute(Is.Query, BaseUri + "/{id}")]
-        public CollectionJsonResult<Slog> FilterEntries(int id, int characterId)
+        [CollectionJsonRoute(Is.Query, "{id}")]
+        public CollectionJsonResult<Slog> Filter(int id, int characterId)
         {
             var models = _ravenSession.Query<Slog>();
             return new CollectionJsonResult<Slog>(models);
         }
 
-        [CollectionJsonRoute(Is.Item, BaseUri + "/{id}")]
+        [CollectionJsonRoute(Is.Item, "{id}")]
         public CollectionJsonResult<Slog> Get(int id)
         {
             var model = _ravenSession.Load<Slog>(id);

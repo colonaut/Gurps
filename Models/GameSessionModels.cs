@@ -19,14 +19,15 @@ namespace MedienKultur.Gurps.Models
 
         public DateTimeOffset PlayedAt { get; set; }
 
-        public GameSetting Setting { get; set; }
-        
-        public GameMaster GameMaster { get; set; }
-        
-        public IEnumerable<CharacterReference> Characters { get; set; }
+        [CollectionJsonReference(typeof(GameSetting))]
+        public int SettingId { get; set; }
 
         [CollectionJsonReference(typeof(Slog))]
         public int SlogId { get; set; }
+
+        public CharacterReference GameMaster { get; set; }
+
+        public IEnumerable<CharacterReference> Characters { get; set; }
 
 
         public class CharacterReference
@@ -66,36 +67,6 @@ namespace MedienKultur.Gurps.Models
 
         }
 
-    }
-
-
-    
-
-
-    
-    public class GameSetting
-    {
-        public string Name { get; set; }
-        public string System { get; set; }
-        public IEnumerable<GameMaster> GameMasters { get; set; }
-        public GameCalendar Calendar { get; set; }
-    }
-
-
-    /*
-{"template":{"data":[
-{"name":"name","value":"The GameMaster"},
-{"name":"gameCalendar","object":{"data":[
-{"name":"name","value":"The Calendar"}
-]}}
-]}}
-     */
-
-
-    public class GameCalendar
-    {
-        public int Id { get; set; } //is primary key, but we also set it, when we send data to the server ans want to check the id...
-        public string Name { get; set; }
     }
 
     

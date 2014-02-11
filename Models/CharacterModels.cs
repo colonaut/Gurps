@@ -1,7 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Web.Mvc;
-using MedienKultur.Gurps.Models.Extensions;
 
 namespace MedienKultur.Gurps.Models
 {
@@ -90,7 +88,7 @@ namespace MedienKultur.Gurps.Models
         public string Page { get; set; }
     }
 
-    public class Weapon
+    public abstract class Weapon
     {
         public Weapon()
         {

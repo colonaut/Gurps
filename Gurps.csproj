@@ -159,6 +159,7 @@
     <Compile Include="Models\CharacterModels.cs" />
     <Compile Include="Models\Extensions\DropDownListExtensions.cs" />
     <Compile Include="Models\GameSessionModels.cs" />
+    <Compile Include="Models\GameSettingModels.cs" />
     <Compile Include="Models\ModelBinders\ContentBundleModelBinders.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Controllers\HomeController.cs" />

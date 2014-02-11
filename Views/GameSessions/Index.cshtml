@@ -5,102 +5,140 @@
     ViewBag.Title = "Index GameSessions";
 }
 
-<section>
-    <div ng-controller="GameSessionsController" name="gameSessions">
 
-        <section>
-            <h2> Game Sessions from server</h2>
+
+<section collection-json="/api/gamesessions" ng-controller="GameSessionsController" >
+    <h2> Game Sessions from server</h2>
+    <a href data-ng-click="create()">Game Session anlegen und zurückbekommen (server)</a>
             
-            <a href ng-click="create()">Game Session anlegen und zurückbekommen (server)</a>
-            
+    <ul>
+        <li ng-repeat="session in $collection.items">
+            <p>created: {{session.entity.createdAt}}</p>
+
+            <h3>Angemeldete Charaktere:</h3>
             <ul>
-                <li ng-repeat="session in items">
-                    <h2>{{session.date}}</h2>
+                <li ng-repeat="character in session.entity.characters">
+                    
                 </li>
-            </ul>                    
-        </section>
-       
-
-        <section>
-            <h3><input type="checkbox" ng-model="toggler"/>collection directive: has inline content:</h3>
-
-            <div class="collection" a-collection="/foo/bar/api/gamesessions" ng-if="toggler">
-                
-                <p>testString from outer controller scope: {{testString}}</p>
-
-                <p>I am inline!</p>
-                <p>random: {{random}}</p>
-                <p>version: {{base.version}}</p>
-
-                <div ng-form name="template">
+            </ul>
                     
-                    <ul class="data">
-                        <li class="item" ng-repeat="item in base.template.data"
-                            inline-include="collection-json-template">
+
+            <h3>Sessionlog</h3>
+            slog id: {{session.entity.slogId}}
+            <ul>
+                <li ng-repeat="entry in session.entity.slog.entries">
                     
-                            <div class="typeof" ng-switch="getDataItemType(item)">
+                </li>
+            </ul>
+        </li>
+    </ul>
 
-                                <div class="value" ng-switch-when="value">
-                                    <label>{{item.prompt}}</label>
-                                    <input type="text" name="{{item.name}}" ng-model="item.value"/>
-                                    DISPLAY FINISHED             
-                                </div>
-
-                                <div class="values" ng-switch-when="values">
-                                    <label>{{item.prompt}}</label>
-                                    THIS IS TODO                          
-                                </div>
-
-                                <div class="object" ng-switch-when="object">
-                                    <label>{{item.prompt}}</label>
-                                    <ul>
-                                        <li ng-repeat="item in item.data"
-                                            inline-include="collection-json-template"></li>
-                                    </ul>
-                                </div>
-
-                                <div class="objects" ng-switch-when="objects">
-                                    <label>{{item.prompt}}</label>
-                                    [<a href="" ng-click="addObject(item.objects, item.data)">add</a>]
-                                    
-                                    <ul ng-repeat="object in item.objects">
-                                        <li ng-repeat="item in object.data"
-                                            inline-include="collection-json-template"></li>
-                                        [<a href="" ng-click="removeObject(item.objects, object)">remove</a>]
-                                    </ul>
-                                                                   
-                                </div>
-
-                                <div ng-switch-when="select">
-                                    TODO: select
-                                </div>
-
-                                <div ng-switch-when="select">
-                                    TODO: options
-                                </div>
-
-                                <p class="not-supported" ng-switch-default>No supported data item type found.</p>
-
-                            </div>
-
-                        </li>
-                    </ul>
-
-
-                    <div class="tools">
-                        <input type="reset"></input>
-                        <input type="submit" ng-click="create($event)"></input>
-                    </div>
-
-                </div>
-
-            </div>     
-
-        </section>
-
-    </div>
 </section>
 
+
+
+<section collection-json="api/characters">
+
+    <h2>Characters</h2>
+        
+    <ul ng-controller="PlayerCharactersController">
+        <li ng-repeat="character in collection.items">
+
+            <h2>{{character.entity.name}}</h2>
+            <ul class="skills">
+                <li ng-repeat="skill in character.entity.skills">
+                    <strong>{{skill.name}} {{skill.level}}</strong>
+                    ({{skill.points}} | {{skill.step}}) [{{skill.page}}]
+                </li>
+            </ul>                
+        </li>
+    </ul>
+    
+    <div upload="entity" style="width:80px;height:50px;border:1px dotted #ff8c00;">
+        place json file here
+    </div>
+
+</section>
+
+
+
+
+<section>
+    <h3><input type="checkbox" ng-model="toggler"/>TEST collection directive: has inline content:</h3>
+
+    <div class="collection" a-collection="/api/gamesessions" ng-if="toggler">
+                
+        <p>testString from outer controller scope: {{testString}}</p>
+
+        <p>I am inline!</p>
+        <p>random: {{random}}</p>
+        <p>version: {{base.version}}</p>
+
+        <div ng-form name="template">
+                    
+            <ul class="data">
+                <li class="item" ng-repeat="item in base.template.data"
+                    inline-include="collection-json-template">
+                    
+                    <div class="typeof" ng-switch="getDataItemType(item)">
+
+                        <div class="value" ng-switch-when="value">
+                            <label>{{item.prompt}}</label>
+                            <input type="text" name="{{item.name}}" ng-model="item.value"/>
+                            DISPLAY FINISHED             
+                        </div>
+
+                        <div class="values" ng-switch-when="values">
+                            <label>{{item.prompt}}</label>
+                            THIS IS TODO                          
+                        </div>
+
+                        <div class="object" ng-switch-when="object">
+                            <label>{{item.prompt}}</label>
+                            <ul>
+                                <li ng-repeat="item in item.data"
+                                    inline-include="collection-json-template"></li>
+                            </ul>
+                        </div>
+
+                        <div class="objects" ng-switch-when="objects">
+                            <label>{{item.prompt}}</label>
+                            [<a href="" ng-click="addObject(item.objects, item.data)">add</a>]
+                                    
+                            <ul ng-repeat="object in item.objects">
+                                <li ng-repeat="item in object.data"
+                                    inline-include="collection-json-template"></li>
+                                [<a href="" ng-click="removeObject(item.objects, object)">remove</a>]
+                            </ul>
+                                                                   
+                        </div>
+
+                        <div ng-switch-when="select">
+                            TODO: select
+                        </div>
+
+                        <div ng-switch-when="select">
+                            TODO: options
+                        </div>
+
+                        <p class="not-supported" ng-switch-default>No supported data item type found.</p>
+
+                    </div>
+
+                </li>
+            </ul>
+
+
+            <div class="tools">
+                <input type="reset"></input>
+                <input type="submit" ng-click="create($event)"></input>
+            </div>
+
+        </div>
+
+    </div>     
+
+</section>
 
 
 @section scripts
