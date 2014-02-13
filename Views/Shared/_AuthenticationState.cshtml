@@ -1,0 +1,20 @@
+﻿@using Microsoft.AspNet.Identity
+@using MedienKultur.Gurps.Controllers;
+
+
+@if (User.Identity.IsAuthenticated){
+    <div>
+        <img src="@User.ApplicationUser().Gravatar()?r=x&size=24"/>
+        <span>@User.ApplicationUser().UserName</span>
+        <a href="@Url.Action("Logout", "Authentication")">
+            Log Out
+        </a>    
+    </div>
+
+
+
+
+    
+} else {
+    <p>You are not logged in...</p>
+}

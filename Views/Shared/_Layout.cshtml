@@ -2,11 +2,11 @@
 <html lang="en">
     <head>
         <meta charset="utf-8" />
-        <title>@ViewBag.Title - My ASP.NET MVC Application</title>
-        <link href="~/favicon.ico" rel="shortcut icon" type="image/x-icon" />
+        <title>Gurps!</title>
         <meta name="viewport" content="width=device-width" />
         @RenderSection("styles", required: false)
     </head>
+
     <body ng-app="app">
         <header>
             <div class="content-wrapper">
@@ -15,28 +15,29 @@
                 </div>
                 <div class="float-right">
                     <section id="login">
-                        Html.Partial("_LoginPartial")
+                        @Html.Partial("_AuthenticationState")
                     </section>
                     <nav>
                         <ul id="menu">
-                            <li>@Html.ActionLink("Home", "Index", "Home")</li>
-                            <li>@Html.ActionLink("About", "About", "Home")</li>
-                            <li>@Html.ActionLink("Contact", "Contact", "Home")</li>
+                            <li>@Html.ActionLink("GameSessions", "Index", "GameSessions")</li>
+                            <li>@Html.ActionLink("Characters", "Index", "Characters")</li>
                         </ul>
                     </nav>
                 </div>
             </div>
         </header>
+
         <div id="body">
             @RenderSection("featured", required: false)
             <section class="content-wrapper main-content clear-fix">
                 @RenderBody()
             </section>
         </div>
+
         <footer>
             <div class="content-wrapper">
                 <div class="float-left">
-                    <p>&copy; @DateTime.Now.Year - My ASP.NET MVC Application</p>
+                    <p>&copy; @DateTime.Now.Year - @@colonaut</p>
                 </div>
             </div>
         </footer>

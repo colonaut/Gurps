@@ -252,7 +252,7 @@
                 };
             }
         ])
-        //upload sestructured json
+        //upload sestructured json (better in controller of section?)
         .directive('upload', [
             //'',
             function() {
@@ -313,15 +313,12 @@
                 var dataItemTypes = ['values', 'value', 'options', 'select', 'object', 'objects'],
                     ix,
                     keyx;
-
-/**/
                 function getDataItemType(dataItem) {
                     for (ix in dataItemTypes)
                         if (dataItem.hasOwnProperty(dataItemTypes[ix]))
                             return dataItemTypes[ix];
                     return null;
                 };
-
                 function destructure(data) {
                     var result = {};
                     for (ix in data) {
@@ -346,13 +343,11 @@
                     return result;
                 }
 
-
-                
-
                 /* the directive */
                 return {
                     restrict: 'A',
                     replace: false,
+                    //require: '?^ngController', //TODO: this could be the other attempt...
                     scope: true,
                     controller: [
                         '$scope', '$element', '$attrs', '$http',
