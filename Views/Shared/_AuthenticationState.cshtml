@@ -4,17 +4,21 @@
 
 @if (User.Identity.IsAuthenticated){
     <div>
-        <img src="@User.ApplicationUser().Gravatar()?r=x&size=24"/>
-        <span>@User.ApplicationUser().UserName</span>
-        <a href="@Url.Action("Logout", "Authentication")">
-            Log Out
-        </a>    
+        <a href="@Url.Action("Index", "AccountSettings")">
+@*            <img alt="gravatar"
+                class="gravatar"
+                height="20"
+                width="20"
+                src="@User.Identity.GetApplicationUser().GravatarUrl?r=x&size=24">     *@       
+            <span class="user-name">@User.Identity.Name</span>
+        </a> /
+        <a href="@Url.Action("Logout", "Authentication")">abmelden</a>
+
+
     </div>
-
-
-
-
-    
 } else {
-    <p>You are not logged in...</p>
+    <div>
+        <a href="@Url.Action("Login", "Authentication")">anmelden</a> /
+        <a href="@Url.Action("Register", "Authentication")">registrieren</a>
+    </div>
 }

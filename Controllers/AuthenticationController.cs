@@ -2,14 +2,14 @@
 using System.Security.Cryptography;
 using System.Security.Principal;
 using System.Text;
-using System.Threading.Tasks;
 using System.Web;
 using System.Web.Mvc;
+using AspNet.Identity.RavenDB;
 using MedienKultur.Gurps.Models;
-using MedienKultur.Identity.RavenDB;
 using Microsoft.AspNet.Identity;
 using Microsoft.Owin.Security;
 using Raven.Client;
+using StructureMap;
 
 namespace MedienKultur.Gurps.Controllers
 {
@@ -37,62 +37,112 @@ namespace MedienKultur.Gurps.Controllers
 
     public static class PrincipalExtensions
     {
-        //public class UserStore : IUserStore<ApplicationUser>
-        //{
-        //    public void Dispose()
-        //    {
-        //        throw new System.NotImplementedException();
-        //    }
-
-        //    public Task CreateAsync(ApplicationUser user)
-        //    {
-        //        throw new System.NotImplementedException();
-        //    }
-
-        //    public Task UpdateAsync(ApplicationUser user)
-        //    {
-        //        throw new System.NotImplementedException();
-        //    }
-
-        //    public Task DeleteAsync(ApplicationUser user)
-        //    {
-        //        throw new System.NotImplementedException();
-        //    }
-
-        //    public Task<ApplicationUser> FindByIdAsync(string userId)
-        //    {
-        //        throw new System.NotImplementedException();
-        //    }
-
-        //    public Task<ApplicationUser> FindByNameAsync(string userName)
-        //    {
-        //        throw new System.NotImplementedException();
-        //    }
-        //}
-        
-        public static ApplicationUser ApplicationUser(this IPrincipal user)
+        public static ApplicationUser GetApplicationUser(this IIdentity identity)
         {
-            //var userPrincipal = (GenericPrincipal)user; cann also be claim principal..
-            //var userManager = new UserManager<ApplicationUser>(
-            //    new UserStore<ApplicationUser>(() => IDocumentSession ));
+            ApplicationUser applicationUser = new ApplicationUser("unknown"); //TODO: currently we need this in order to not break the view if you are logged in but cannot get an application user.... this should be removed once account and authentication flow is working
 
-            if (user.Identity.IsAuthenticated)
-                
-                return new ApplicationUser("colonaut@gmx.de"){GravatarEmail = "colonaut@gmx.de"};
-                
-                //return userManager.FindByName(user.Identity.GetUserName());
-            
-            return null;
+            using (var session = ObjectFactory.GetInstance<IDocumentSession>())
+            {
+                // Operations against ravenSession
+                var userManager = new UserManager<ApplicationUser>(
+                    new UserStore<ApplicationUser>(session));
+
+                if (identity.IsAuthenticated)
+                    applicationUser = userManager.FindById(identity.GetUserId());
+            }
+
+            return applicationUser;
         }
+
     }
-    
-    
+
+    //TODO ? do i want this approach?
+    public enum Roles
+    {
+        Registered,
+        Player,
+        GameMaster,
+        Administrator
+    }
+
     public class AuthenticationController : Controller
     {
-        IAuthenticationManager Authentication
+        readonly IDocumentSession _ravenSession;
+
+        public AuthenticationController(IDocumentSession ravenSession)
+        {
+            _ravenSession = ravenSession;            
+        }
+       
+        IAuthenticationManager AuthenticationManager
         {
             get { return HttpContext.GetOwinContext().Authentication; }
         }
+
+        UserManager<ApplicationUser> ApplicationUserManager
+        {
+            get
+            {
+                var userManager =
+                    new UserManager<ApplicationUser>(new UserStore<ApplicationUser>(_ravenSession));
+                userManager.UserValidator =
+                    new UserValidator<ApplicationUser>(userManager)
+                    {
+                        AllowOnlyAlphanumericUserNames = false
+                    };
+                return userManager;
+            }
+        }
+            
+
+        [Route("register")]
+        [HttpGet]
+        public ActionResult Register()
+        {
+            return View();
+        }
+
+        [Route("register")]
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public ActionResult Register(RegisterModel registerModel)
+        {
+            if (ModelState.IsValid)
+            {
+                ApplicationUser applicationUser;
+                if (!string.IsNullOrWhiteSpace(registerModel.UserName))
+                    applicationUser =
+                        new ApplicationUser(registerModel.Email,
+                            registerModel.UserName);
+                else
+                    applicationUser =
+                        new ApplicationUser(registerModel.Email);
+
+                var identityResult =
+                    ApplicationUserManager.Create(applicationUser,
+                        registerModel.Password);
+
+                if (identityResult.Succeeded)
+                {
+                    ApplicationUserManager.AddToRole(applicationUser.Id,
+                        Roles.Registered.ToString());
+
+                    var claimsIdentity =
+                        ApplicationUserManager.CreateIdentity(applicationUser,
+                            DefaultAuthenticationTypes.ApplicationCookie);
+
+                    var authenticationProperties =
+                        new AuthenticationProperties() {};
+
+                    AuthenticationManager.SignIn(authenticationProperties, claimsIdentity);
+
+                    return RedirectToAction("Index", "AccountSettings");
+                }
+            }
+
+            return View("Register", registerModel);
+        }
+
 
         [Route("login")]
         [HttpGet]
@@ -100,7 +150,6 @@ namespace MedienKultur.Gurps.Controllers
         {
             return View();
         }
-
 
         [Route("login")]
         [HttpPost]
@@ -124,12 +173,12 @@ namespace MedienKultur.Gurps.Controllers
                     // tell OWIN the identity provider, optional
                     // identity.AddClaim(new Claim(IdentityProvider, "Simplest Auth"));
 
-                    Authentication.SignIn(new AuthenticationProperties
+                    AuthenticationManager.SignIn(new AuthenticationProperties
                                           {
                                               IsPersistent = loginModel.RememberMe
                                           }, identity);
 
-                    return RedirectToAction("Index", "Home");
+                    return RedirectToAction("Index", "Account");
                 }
             }
 
@@ -137,12 +186,11 @@ namespace MedienKultur.Gurps.Controllers
         }
 
 
-
         [Route("logout")]
         [HttpGet]
         public ActionResult Logout()
         {
-            Authentication.SignOut(DefaultAuthenticationTypes.ApplicationCookie);
+            AuthenticationManager.SignOut(DefaultAuthenticationTypes.ApplicationCookie);
             return RedirectToAction("Login");
         }
     }

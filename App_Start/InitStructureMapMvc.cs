@@ -20,14 +20,15 @@
 
 using System.Web.Http;
 using System.Web.Mvc;
-using StructureMap;
-using MedienKultur.Gurps.App_Start;
+using MedienKultur.Gurps;
 using MedienKultur.Gurps.DependencyResolution;
+using StructureMap;
 
-[assembly: WebActivatorEx.PreApplicationStartMethod(typeof(StructuremapMvc), "Start")]
+[assembly: WebActivatorEx.PreApplicationStartMethod(typeof(InitStructureMapMvc), "Start")]
 
-namespace MedienKultur.Gurps.App_Start {
-    public static class StructuremapMvc {
+namespace MedienKultur.Gurps {
+    public static class InitStructureMapMvc
+    {
         public static void Start() {
 			IContainer container = IoC.Initialize();
             DependencyResolver.SetResolver(new StructureMapDependencyResolver(container));

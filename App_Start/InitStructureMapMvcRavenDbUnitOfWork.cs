@@ -1,7 +1,6 @@
-using System;
 using System.Web.Http;
 using System.Web.Mvc;
-using MedienKultur.Gurps.App_Start;
+using MedienKultur.Gurps;
 using MedienKultur.Gurps.DependencyResolution;
 using MedienKultur.Gurps.Filters;
 using StructureMap;
@@ -9,7 +8,7 @@ using StructureMap;
 [assembly: WebActivatorEx.PreApplicationStartMethod(typeof(RavenDbUnitOfWorkFilterConfig), "Start")]
 [assembly: WebActivatorEx.PostApplicationStartMethod(typeof(RavenDbUnitOfWorkStructureMapRegistry), "Start")]
 
-namespace MedienKultur.Gurps.App_Start
+namespace MedienKultur.Gurps
 {
 	public static class RavenDbUnitOfWorkFilterConfig
     {

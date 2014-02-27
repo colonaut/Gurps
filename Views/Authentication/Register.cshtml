@@ -1,0 +1,50 @@
+﻿@model RegisterModel
+
+@{
+    ViewBag.Title = "Register";
+}
+
+
+@using (Html.BeginForm()) 
+{
+    @Html.AntiForgeryToken()
+    
+    <section>
+        <title>
+            <h2>Register</h2>
+        </title>
+        @Html.ValidationSummary(true)
+
+        <div>
+            @Html.LabelFor(model => model.Email)
+            <div>
+                @Html.EditorFor(model => model.Email)
+                @Html.ValidationMessageFor(model => model.Email)
+            </div>
+        </div>        
+
+        <div>
+            @Html.LabelFor(model => model.UserName)
+            <div>
+                @Html.EditorFor(model => model.UserName)
+                @Html.ValidationMessageFor(model => model.UserName)
+            </div>
+        </div>
+
+        <div>
+            @Html.LabelFor(model => model.Password)
+            <div>
+                @Html.EditorFor(model => model.Password)
+                @Html.ValidationMessageFor(model => model.Password)
+            </div>
+        </div>
+
+        <div>
+            <div>
+                <input type="submit" value="Create"/>
+            </div>
+        </div>
+    </section>
+}
+
+

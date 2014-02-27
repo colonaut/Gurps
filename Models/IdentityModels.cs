@@ -1,44 +1,33 @@
-﻿using System;
-using MedienKultur.Identity.RavenDB;
-using Microsoft.AspNet.Identity;
+﻿using AspNet.Identity.RavenDB;
 
 namespace MedienKultur.Gurps.Models
 {
 
     public class ApplicationUser : IdentityUser
     {
-        string _userName;
-        string _email;
+        private ApplicationUser(){}
 
         public ApplicationUser(string email)
+            : base(email)
         {
-            _email = email;
-            Id = Guid.NewGuid().ToString();
-
+            //base.Id = Guid.NewGuid().ToString();     
+            base.UserName = email;
+            Email = email;
         }
 
         public ApplicationUser(string email, string userName)
-            : this(email)
+            : base(userName)
         {
-            _userName = userName;
+            Email = email;
         }
 
 
-        public string Id { get; private set; }
+        public string Email { get; set; }
 
-        public string UserName
-        {
-            get { return _userName ?? _email; }
-            set { _userName = value; }
-        }
+        public string GravatarEmail { get; set; }
 
-        public string Email
-        {
-            get { return _email; }
-            set { _email = value; }
-        }
-
-        public string GravatarEmail { get; set; } //private gravatar email
+        public string GravatarUrl { get; set; }
+        
     }
 
 }

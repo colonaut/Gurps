@@ -21,12 +21,12 @@ namespace MedienKultur.Gurps.Controllers
             _ravenSession = ravenSession;
         }
 
+
         public CollectionJsonResult<GurpsCharacter> Query()
         {
             var models = _ravenSession.Query<GurpsCharacter>();
             return new CollectionJsonResult<GurpsCharacter>(models);
         }
-
 
         //collection of characters
         [CollectionJsonRoute(Is.Base, RouteName = "CharacterCollection")]

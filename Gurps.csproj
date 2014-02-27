@@ -39,12 +39,12 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
+    <Reference Include="AspNet.Identity.RavenDB">
+      <HintPath>..\packages\AspNet.Identity.RavenDB.0.9.5\lib\net45\AspNet.Identity.RavenDB.dll</HintPath>
+    </Reference>
     <Reference Include="Microsoft.AspNet.Identity.Core, Version=1.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
       <HintPath>..\packages\Microsoft.AspNet.Identity.Core.1.0.0\lib\net45\Microsoft.AspNet.Identity.Core.dll</HintPath>
-    </Reference>
-    <Reference Include="Microsoft.AspNet.Identity.Owin">
-      <HintPath>..\packages\Microsoft.AspNet.Identity.Owin.1.0.0\lib\net45\Microsoft.AspNet.Identity.Owin.dll</HintPath>
     </Reference>
     <Reference Include="Microsoft.CSharp" />
     <Reference Include="Microsoft.Data.Edm, Version=5.2.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
@@ -61,14 +61,13 @@
     <Reference Include="Microsoft.Owin.Host.SystemWeb">
       <HintPath>..\packages\Microsoft.Owin.Host.SystemWeb.2.1.0\lib\net45\Microsoft.Owin.Host.SystemWeb.dll</HintPath>
     </Reference>
-    <Reference Include="Microsoft.Owin.Security">
+    <Reference Include="Microsoft.Owin.Security, Version=2.1.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
       <HintPath>..\packages\Microsoft.Owin.Security.2.1.0\lib\net45\Microsoft.Owin.Security.dll</HintPath>
     </Reference>
-    <Reference Include="Microsoft.Owin.Security.Cookies">
-      <HintPath>..\packages\Microsoft.Owin.Security.Cookies.2.0.2\lib\net45\Microsoft.Owin.Security.Cookies.dll</HintPath>
-    </Reference>
-    <Reference Include="Microsoft.Owin.Security.OAuth">
-      <HintPath>..\packages\Microsoft.Owin.Security.OAuth.2.0.2\lib\net45\Microsoft.Owin.Security.OAuth.dll</HintPath>
+    <Reference Include="Microsoft.Owin.Security.Cookies, Version=2.1.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\packages\Microsoft.Owin.Security.Cookies.2.1.0\lib\net45\Microsoft.Owin.Security.Cookies.dll</HintPath>
     </Reference>
     <Reference Include="Microsoft.Practices.ServiceLocation, Version=1.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
@@ -181,8 +180,9 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="App_Start\StructuremapMvc.cs" />
-    <Compile Include="App_Start\StructuremapMvcRavenDbUnitOfWork.cs" />
+    <Compile Include="App_Start\InitStructureMapMvc.cs" />
+    <Compile Include="App_Start\InitStructureMapMvcRavenDbUnitOfWork.cs" />
+    <Compile Include="Controllers\AccountSettingsController.cs" />
     <Compile Include="Controllers\AuthenticationController.cs" />
     <Compile Include="Controllers\ArticlesController.cs" />
     <Compile Include="Controllers\CharactersController.cs" />
@@ -199,7 +199,7 @@
       <DependentUpon>Global.asax</DependentUpon>
     </Compile>
     <Compile Include="Models\ArticleModels.cs" />
-    <Compile Include="Models\AuthorizationModels.cs" />
+    <Compile Include="Models\AuthenticationModels.cs" />
     <Compile Include="Models\CategoryModels.cs" />
     <Compile Include="Models\CharacterModels.cs" />
     <Compile Include="Models\Extensions\DropDownListExtensions.cs" />
@@ -209,6 +209,9 @@
     <Compile Include="Models\ModelBinders\ContentBundleModelBinders.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Controllers\HomeController.cs" />
+    <Compile Include="App_Start\InitAspNetIdentityOwin.cs">
+      <SubType>Code</SubType>
+    </Compile>
   </ItemGroup>
   <ItemGroup>
     <Compile Include="App_Start\FilterConfig.cs" />
@@ -509,10 +512,6 @@
       <Project>{1a88c46b-198e-45ce-8c2b-2a5ad4d4abb6}</Project>
       <Name>CollectionJsonExtended.Core</Name>
     </ProjectReference>
-    <ProjectReference Include="..\IdentityRavenDB\Identity.RavenDB.csproj">
-      <Project>{c147fa58-04f8-4139-9e6e-e3d72f3e30ec}</Project>
-      <Name>Identity.RavenDB</Name>
-    </ProjectReference>
     <ProjectReference Include="..\RequireScriptResolver\RequireScriptResolver.csproj">
       <Project>{6ca2aba8-e9e8-4342-b332-eddf9112e410}</Project>
       <Name>RequireScriptResolver</Name>
@@ -557,6 +556,12 @@
   </ItemGroup>
   <ItemGroup>
     <Content Include="Views\Shared\_AuthenticationState.cshtml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="Views\AccountSettings\Index.cshtml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="Views\Authentication\Register.cshtml" />
   </ItemGroup>
   <PropertyGroup>
     <VisualStudioVersion Condition="'$(VisualStudioVersion)' == ''">10.0</VisualStudioVersion>

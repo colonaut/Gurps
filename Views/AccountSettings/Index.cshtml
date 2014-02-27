@@ -1,0 +1,46 @@
+﻿@using MedienKultur.Gurps.Controllers
+@model ProfileModel
+
+@{
+    ViewBag.Title = "Profil";
+}
+
+@using (Html.BeginForm()) 
+{
+    @Html.AntiForgeryToken()
+    
+    <section>
+        <title>
+            <h2>Profil</h2>
+        </title>
+        @Html.ValidationSummary(true)
+
+        <div>
+            @Html.LabelFor(model => model.Email) (public)
+            <div>
+                @Html.EditorFor(model => model.Email)
+                @Html.ValidationMessageFor(model => model.Email)
+            </div>
+        </div>
+
+        <div>
+            @Html.LabelFor(model => model.GravatarEmail) (private)
+            <div>
+                @Html.EditorFor(model => model.GravatarEmail)
+                @Html.ValidationMessageFor(model => model.GravatarEmail)
+            </div>
+        </div>
+
+        <div>
+            <div>
+                <input type="submit" value="Save"/>
+            </div>
+        </div>
+    </section>
+
+    <section>
+        <img src="@User.Identity.GetApplicationUser().GravatarUrl?r=x&size=256"/>
+    </section>
+}
+
+
