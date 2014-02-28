@@ -41,7 +41,7 @@ namespace MedienKultur.Gurps.Controllers
         {
             ApplicationUser applicationUser = new ApplicationUser("unknown"); //TODO: currently we need this in order to not break the view if you are logged in but cannot get an application user.... this should be removed once account and authentication flow is working
 
-            using (var session = ObjectFactory.GetInstance<IDocumentSession>())
+            using (var session = DependencyResolver.Current.GetService<IDocumentSession>())
             {
                 // Operations against ravenSession
                 var userManager = new UserManager<ApplicationUser>(
@@ -158,28 +158,30 @@ namespace MedienKultur.Gurps.Controllers
         {
             if (ModelState.IsValid)
             {
+                var applicationUser =
+                    ApplicationUserManager.FindByName(loginModel.UserName);
                 
-                if (loginModel.HasValidUsernameAndPassword)
-                {
-                    var identity = new ClaimsIdentity(new [] {
-                            new Claim(ClaimTypes.Name, loginModel.UserName),                            
-                        },
-                        DefaultAuthenticationTypes.ApplicationCookie,
-                        ClaimTypes.Name,
-                        ClaimTypes.Role);
+                if (applicationUser == null)
+                    return View("Login", loginModel);
 
-                    // if you want roles, just add as many as you want here (for loop maybe?)
-                    identity.AddClaim(new Claim(ClaimTypes.Role, "guest"));
-                    // tell OWIN the identity provider, optional
-                    // identity.AddClaim(new Claim(IdentityProvider, "Simplest Auth"));
+                var passwordVerificationResult =
+                    ApplicationUserManager.PasswordHasher
+                        .VerifyHashedPassword(applicationUser.PasswordHash, loginModel.Password);
 
-                    AuthenticationManager.SignIn(new AuthenticationProperties
-                                          {
-                                              IsPersistent = loginModel.RememberMe
-                                          }, identity);
+                if (passwordVerificationResult != PasswordVerificationResult.Success)
+                    return View("Login", loginModel);
+                
+                var claimsIdentity =
+                    ApplicationUserManager.CreateIdentity(applicationUser,
+                        DefaultAuthenticationTypes.ApplicationCookie);
 
-                    return RedirectToAction("Index", "Account");
-                }
+                AuthenticationManager
+                    .SignIn(new AuthenticationProperties
+                            {
+                                IsPersistent = loginModel.RememberMe
+                            }, claimsIdentity);
+
+                return RedirectToAction("Index", "AccountSettings");
             }
 
             return View("Login", loginModel);

@@ -12,14 +12,6 @@ namespace MedienKultur.Gurps.Models
         public string Password { get; set; }
 
         public bool RememberMe { get; set; }
-
-        public bool HasValidUsernameAndPassword
-        {
-            get
-            {
-                return Password == "password";
-            }
-        }
     }
 
     

@@ -1,8 +1,4 @@
-﻿@using Microsoft.AspNet.Identity
-@using MedienKultur.Gurps.Controllers;
-
-
-@if (User.Identity.IsAuthenticated){
+﻿@if (User.Identity.IsAuthenticated){
     <div>
         <a href="@Url.Action("Index", "AccountSettings")">
 @*            <img alt="gravatar"

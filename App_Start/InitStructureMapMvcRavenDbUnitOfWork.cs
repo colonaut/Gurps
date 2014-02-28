@@ -1,9 +1,14 @@
 using System;
 using System.Web.Http;
 using System.Web.Mvc;
+using AspNet.Identity.RavenDB;
 using MedienKultur.Gurps;
+using MedienKultur.Gurps.Controllers;
 using MedienKultur.Gurps.DependencyResolution;
 using MedienKultur.Gurps.Filters;
+using MedienKultur.Gurps.Models;
+using Microsoft.AspNet.Identity;
+using Raven.Client;
 using StructureMap;
 
 [assembly: WebActivatorEx.PreApplicationStartMethod(typeof(RavenDbUnitOfWorkFilterConfig), "Start")]
@@ -31,15 +36,40 @@ namespace MedienKultur.Gurps
             //add additional StructureMapRavenDBRegistry to ObjectFactory's container _after_ (PostApplicationStart) the initialization is done (in StructuremapMvc).
             ObjectFactory.Configure(r => r.AddRegistry<StructureMapRavenDbRegistry>());
 			//place your initial raven objects here for creation on app start, if you want to
-            //using (var session = ObjectFactory.GetInstance<IDocumentSession>())
-            //{
-            //    session.Store(
-            //        new ExampleModel
-            //            {
-                                                              
-            //            });
-            //    session.SaveChanges();
-            //}       
+            using (var session = ObjectFactory.GetInstance<IDocumentSession>())
+            {
+                var userManager =
+                    new UserManager<ApplicationUser>(new UserStore<ApplicationUser>(session));
+
+                userManager.UserValidator =
+                    new UserValidator<ApplicationUser>(userManager)
+                    {
+                        AllowOnlyAlphanumericUserNames = false
+                    };
+
+                var applicationUser =
+                    new ApplicationUser("colonaut@gmx.de", "colonaut")
+                    {
+                        GravatarEmail = "colonaut@gmx.de"
+                    };
+                
+                var identityResult =
+                    userManager.Create(applicationUser,
+                        "password");
+
+                if (identityResult.Succeeded)
+                {
+                    userManager.AddToRole(applicationUser.Id,
+                        "Administrator");
+
+                    var claimsIdentity =
+                        userManager.CreateIdentity(applicationUser,
+                            DefaultAuthenticationTypes.ApplicationCookie);
+                }
+
+                session.SaveChanges();
+
+            }       
         }
 
     }
