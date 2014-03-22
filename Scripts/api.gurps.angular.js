@@ -252,7 +252,7 @@
                 };
             }
         ])
-        //upload sestructured json (better in controller of section?)
+        //upload destructured json (better in controller of section?)
         .directive('upload', [
             //'',
             function() {
@@ -357,8 +357,8 @@
 
                             $scope.random = Math.random();
 
-                            $scope.getDataItemType = function(property) {
-                                return getDataItemType(property);
+                            $scope.typeof = function(dataItem) {
+                                return getDataItemType(dataItem);
                             };
 
                             $scope.collection = {
@@ -374,6 +374,23 @@
                                 
                             };
 
+                            //apply data structure to object
+                            $scope.add = function (dataItem) {
+                                console.log(dataItem);
+                                if (dataItem.hasOwnProperty('object'))
+                                    dataItem.object = { data: angular.copy(dataItem.data) };
+                                else if (dataItem.hasOwnProperty('objects'))
+                                    dataItem.objects.push({ data: angular.copy(dataItem.data) });
+                            };
+
+                            $scope.remove = function(dataItem, objectsItem) {
+                                if (dataItem.hasOwnProperty('object'))
+                                    dataItem.object = null;
+                                else if (dataItem.hasOwnProperty('objects')
+                                    && objectsItem)
+                                    dataItem.objects.splice(dataItem.objects.indexOf(objectsItem), 1);
+                            };
+
                             //add object to objects collection of data structure (will be depr?)
                             $scope.addObject = function(objects, data) {
                                 objects.push({ data: angular.copy(data) });
@@ -383,10 +400,23 @@
                                 objects.splice(objects.indexOf(objectItem), 1);
                             };
 
+                            
                             //post a filled template (TODO: required stuff...)
                             $scope.create = function() {
                                 console.log('post the template now...');
-                                console.log($scope.template, "template to post");
+                                console.log($scope.collection.template, "template to post");
+
+                                $http.post($attrs.collectionJson, {reader: { template: $scope.collection.template }})
+                                    .success(function(data, status, headers, config) {
+                                        var location = headers('location');
+                                        console.log(location);
+
+                                        $http.get(location)
+                                            .success(function(gdata) {
+                                            $scope.collection.items.push(gdata);
+                                        });
+                                    });
+
                             };
 
                             //load data...
@@ -400,6 +430,26 @@
 
                         }
                     ]
+                };
+            }
+        ])
+        //collection-json-template default, require collection-json on same scope
+        .directive('collectionJsonTemplate', [
+            
+            function() {
+                return {
+                    restrict: 'A',
+                    replace: false,
+                    require: '^collectionJson', //self or parent
+                    //scope: true,
+                    template: '///<reference path="collection-json-template.html" />',
+                    transclude: true,
+                    link: function (scope) {
+                        console.log(scope, 'collection-json-template scope');
+
+                        console.log(scope.collection, 'da collection');
+
+                    }
                 };
             }
         ]);

@@ -6,13 +6,15 @@
 }
 
 
-
 <section collection-json="/api/gamesessions" ng-controller="GameSessionsController" >
     <h2> Game Sessions from server</h2>
-    <a href data-ng-click="create()">Game Session anlegen und zurückbekommen (server)</a>
+    <a href data-ng-click="create()">Add (Editor)</a>
+    
+    <div collection-json-template></div>
+
             
     <ul>
-        <li ng-repeat="session in $collection.items">
+        <li ng-repeat="session in collection.items">
             <p>created: {{session.entity.createdAt}}</p>
 
             <h3>Angemeldete Charaktere:</h3>
@@ -32,6 +34,8 @@
             </ul>
         </li>
     </ul>
+    
+
 
 </section>
 
@@ -77,10 +81,10 @@
         <div ng-form name="template">
                     
             <ul class="data">
-                <li class="item" ng-repeat="item in base.template.data"
+                <li class="item" ng-repeat="item in collection.template.data"
                     inline-include="collection-json-template">
                     
-                    <div class="typeof" ng-switch="getDataItemType(item)">
+                    <div class="typeof" ng-switch="typeof(item)">
 
                         <div class="value" ng-switch-when="value">
                             <label>{{item.prompt}}</label>

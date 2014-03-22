@@ -9,6 +9,7 @@ using Newtonsoft.Json.Serialization;
 
 namespace MedienKultur.Gurps.Controllers
 {
+    [Authorize]
     public class HomeController : Controller
     {
         public ActionResult Index()

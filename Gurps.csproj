@@ -186,7 +186,6 @@
     <Compile Include="Controllers\AuthenticationController.cs" />
     <Compile Include="Controllers\ArticlesController.cs" />
     <Compile Include="Controllers\CharactersController.cs" />
-    <Compile Include="Controllers\SlogController.cs" />
     <Compile Include="Controllers\GameSessionsController.cs" />
     <Compile Include="Controllers\JUploadController.cs" />
     <Compile Include="DependencyResolution\IoC.cs" />
@@ -485,6 +484,7 @@
     <Content Include="Scripts\angular-1.2.8\i18n\angular-locale_zu.js" />
     <Content Include="Scripts\angular-1.2.8\version.txt" />
     <Content Include="Scripts\api.gurps.angular.js" />
+    <Content Include="Scripts\collection-json-template.html" />
     <Content Include="Scripts\section.html" />
     <Content Include="Web.config" />
     <Content Include="Web.Debug.config">

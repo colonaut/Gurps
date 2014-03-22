@@ -1,0 +1,54 @@
+﻿<div ng-form name="template">
+
+    <ul class="data">
+        <li class="item" ng-repeat="item in collection.template.data"
+            inline-include="collection-json-template">
+
+            <div class="typeof" ng-switch="typeof(item)">
+
+                <div class="value" ng-switch-when="value">
+                    <label>{{item.prompt}}</label>
+                    <input type="text" name="{{item.name}}" ng-model="item.value" />
+                    DISPLAY FINISHED
+                </div>
+
+                <div class="values" ng-switch-when="values">
+                    <label>{{item.prompt}}</label>
+                    THIS IS TODO
+                </div>
+
+                <div class="object" ng-switch-when="object">
+                    <label>{{item.prompt}}</label>
+                    <a href="" ng-click="add(item)" ng-if="!item.object">create</a>
+                    <a href="" ng-click="remove(item)" ng-if="item.object">remove</a>
+                    <ul ng-if="item.object">
+                        <li ng-repeat="item in item.object.data"
+                            inline-include="collection-json-template"></li>
+                    </ul>
+                </div>
+
+                <div class="objects" ng-switch-when="objects">
+                    <label>{{item.prompt}}</label>
+                    <a href="" ng-click="add(item)">add item</a>
+                    <ul ng-repeat="object in item.objects">
+                        <li ng-repeat="item in object.data"
+                            inline-include="collection-json-template"></li>
+                        [<a href="" ng-click="remove(item, object)">remove</a>]
+                    </ul>
+                </div>
+
+                <div ng-switch-when="select">
+                    TODO: select
+                </div>
+
+                <div ng-switch-when="select">
+                    TODO: options
+                </div>
+
+                <p class="not-supported" ng-switch-default>No supported data item type found.</p>
+
+            </div>
+
+        </li>
+    </ul>
+</div>

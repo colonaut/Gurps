@@ -35,8 +35,6 @@ namespace MedienKultur.Gurps.App_Start
             var attempt3DebugDictionary = SingletonFactory<UrlInfoCollection>.Instance
                 .Find<RouteInfo>(typeof(GameSession));
 
-            var attempt4DebugDictionary = SingletonFactory<UrlInfoCollection>.Instance
-                .Find<RouteInfo>(typeof(Slog));
 
             //********
 

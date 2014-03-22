@@ -35,7 +35,9 @@ namespace MedienKultur.Gurps
         {
             //add additional StructureMapRavenDBRegistry to ObjectFactory's container _after_ (PostApplicationStart) the initialization is done (in StructuremapMvc).
             ObjectFactory.Configure(r => r.AddRegistry<StructureMapRavenDbRegistry>());
-			//place your initial raven objects here for creation on app start, if you want to
+            
+            //place your initial raven objects here for creation on app start, if you want to
+            #region Initial RavenDB Content
             using (var session = ObjectFactory.GetInstance<IDocumentSession>())
             {
                 var userManager =
@@ -52,7 +54,7 @@ namespace MedienKultur.Gurps
                     {
                         GravatarEmail = "colonaut@gmx.de"
                     };
-                
+
                 var identityResult =
                     userManager.Create(applicationUser,
                         "password");
@@ -66,11 +68,11 @@ namespace MedienKultur.Gurps
                         userManager.CreateIdentity(applicationUser,
                             DefaultAuthenticationTypes.ApplicationCookie);
                 }
-
                 session.SaveChanges();
-
-            }       
+            }
+            #endregion
         }
 
     }
+
 }

@@ -10,6 +10,7 @@ using Raven.Client;
 
 namespace MedienKultur.Gurps.Controllers
 {
+    [Authorize]
     public class AccountSettingsController : Controller
     {
         readonly IDocumentSession _ravenSession;
@@ -40,7 +41,7 @@ namespace MedienKultur.Gurps.Controllers
             }
         }
 
-        
+
         [Route("password")]
         [HttpGet]
         public ActionResult ChangePassword()
@@ -53,9 +54,6 @@ namespace MedienKultur.Gurps.Controllers
         [HttpGet]
         public ActionResult Index()
         {
-            if (!User.Identity.IsAuthenticated) //this is done in web config....
-                return RedirectToAction("Login", "Authentication");
-
             var applicationUser = ApplicationUserManager.FindById(User.Identity.GetUserId());
             var profileModel = new ProfileModel
                                {
@@ -70,9 +68,6 @@ namespace MedienKultur.Gurps.Controllers
         [HttpPost]
         public ActionResult Index(ProfileModel profileModel)
         {
-            if (!User.Identity.IsAuthenticated) //this is done in web config....
-                return RedirectToAction("Login", "Authentication");
-
             var applicationUser = ApplicationUserManager.FindById(User.Identity.GetUserId());
 
             if (!string.IsNullOrWhiteSpace(profileModel.GravatarEmail))

@@ -2,6 +2,7 @@
 using System.Linq;
 using System.Web.Mvc;
 using System.Web.Routing;
+using System.Web.WebSockets;
 using CollectionJsonExtended.Client;
 using CollectionJsonExtended.Client.Attributes;
 using CollectionJsonExtended.Core;
@@ -61,15 +62,15 @@ namespace MedienKultur.Gurps.Controllers
         }
 
         //query by character id
-        [CollectionJsonRoute(Is.Query, "search")]
-        public CollectionJsonResult<GameSession> ByCharacter(int character)
-        {
-            var models = _ravenSession.Query<GameSession>()
-                .Customize(q => q.WaitForNonStaleResultsAsOfLastWrite())
-                .Where(s => s.Characters.Any(c => c.CharacterId == character));
-            //.AsEnumerable();
-            return new CollectionJsonResult<GameSession>(models);
-        }
+        //[CollectionJsonRoute(Is.Query, "search")]
+        //public CollectionJsonResult<GameSession> ByCharacter(int character)
+        //{
+        //    var models = _ravenSession.Query<GameSession>()
+        //        .Customize(q => q.WaitForNonStaleResultsAsOfLastWrite())
+        //        .Where(s => s.Characters.Any(c => c.CharacterId == character));
+        //    //.AsEnumerable();
+        //    return new CollectionJsonResult<GameSession>(models);
+        //}
 
         //GET item
         [CollectionJsonRoute(Is.Item, "{id:int}")]
@@ -90,9 +91,10 @@ namespace MedienKultur.Gurps.Controllers
         public CollectionJsonResult<GameSession> Create(CollectionJsonReader<GameSession> reader)
         {
             
-            var entity = new GameSession {SlogId = 1};
-            _ravenSession.Store(entity);
+            var entity = reader.Entity;
 
+
+            _ravenSession.Store(entity);
             return new CollectionJsonResult<GameSession>(entity);
         }
 
