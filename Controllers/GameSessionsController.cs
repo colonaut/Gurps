@@ -88,12 +88,9 @@ namespace MedienKultur.Gurps.Controllers
 
         //POST
         [CollectionJsonRoute(Is.Create)]
-        public CollectionJsonResult<GameSession> Create(CollectionJsonReader<GameSession> reader)
+        public CollectionJsonResult<GameSession> Create(CollectionJsonReader<GameSession> template)
         {
-            
-            var entity = reader.Entity;
-
-
+            var entity = template.Entity;
             _ravenSession.Store(entity);
             return new CollectionJsonResult<GameSession>(entity);
         }

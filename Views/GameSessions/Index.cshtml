@@ -26,10 +26,9 @@
                     
 
             <h3>Sessionlog</h3>
-            slog id: {{session.entity.slogId}}
             <ul>
-                <li ng-repeat="entry in session.entity.slog.entries">
-                    
+                <li ng-repeat="slogEntry in session.entity.slogEntries">
+                    {{slogEntry.body}} ({{slogEntry.author.name}})
                 </li>
             </ul>
         </li>

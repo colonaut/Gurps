@@ -391,29 +391,21 @@
                                     dataItem.objects.splice(dataItem.objects.indexOf(objectsItem), 1);
                             };
 
-                            //add object to objects collection of data structure (will be depr?)
-                            $scope.addObject = function(objects, data) {
-                                objects.push({ data: angular.copy(data) });
-                            };
-                            //will be depr ?
-                            $scope.removeObject = function(objects, objectItem) {
-                                objects.splice(objects.indexOf(objectItem), 1);
-                            };
-
                             
                             //post a filled template (TODO: required stuff...)
                             $scope.create = function() {
                                 console.log('post the template now...');
                                 console.log($scope.collection.template, "template to post");
 
-                                $http.post($attrs.collectionJson, {reader: { template: $scope.collection.template }})
+                                $http.post($attrs.collectionJson, { template: $scope.collection.template })
                                     .success(function(data, status, headers, config) {
                                         var location = headers('location');
                                         console.log(location);
 
                                         $http.get(location)
-                                            .success(function(gdata) {
-                                            $scope.collection.items.push(gdata);
+                                            .success(function (gdata) {
+                                             
+                                            $scope.collection.items.push(gdata.collection.items[0]);
                                         });
                                     });
 
