@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using CollectionJsonExtended.Core.Attributes;
 using MedienKultur.Gurps.Models.Extensions;
+using Microsoft.WindowsAzure.Storage.Blob.Protocol;
 using Newtonsoft.Json;
 
 namespace MedienKultur.Gurps.Models
@@ -16,13 +17,35 @@ namespace MedienKultur.Gurps.Models
         public string Name { get; set; }
     }
 
-    public class GameSettingReference
+    public class Slog
     {
-        [CollectionJsonReference(typeof(GameSetting))]
-        public int SettingId { get; set; }
+        public int Id { get; set; }
 
-        public string Name { get; set; }
+        public CharacterReference Character { get; set; }
+
+        public GameSessionReference GameSession { get; set; }
+
+        
+        public class CharacterReference
+        {
+            public int CharacterId { get; set; }
+
+            public string Name { get; set; }
+        }
+
+        public class GameSessionReference
+        {
+            public int GameSessionId { get; set; }
+
+            public AlienDate BeginAlienDate { get; set; }
+
+            public AlienDate EndAlienDate { get; set; }
+
+            public DateTimeOffset PlayedAt { get; set; }
+        }
     }
+
+    
 
 
     public class GameSession
@@ -31,7 +54,6 @@ namespace MedienKultur.Gurps.Models
         {
             CreatedAt = DateTimeOffset.Now;
             Characters = new List<CharacterReference>();
-            SlogEntries = new List<SlogEntry>();
         }
 
         public int Id { get; set; }
@@ -46,9 +68,17 @@ namespace MedienKultur.Gurps.Models
         public CharacterReference GameMaster { get; set; }
 
         public IEnumerable<CharacterReference> Characters { get; set; }
-        
-        public IEnumerable<SlogEntry> SlogEntries { get; set; }
 
+        public SlogReference Slog { get; set; }
+
+
+        public class GameSettingReference
+        {
+            [CollectionJsonReference(typeof(GameSetting))]
+            public int SettingId { get; set; }
+
+            public string Name { get; set; }
+        }
 
         public class CharacterReference
         {
@@ -56,26 +86,17 @@ namespace MedienKultur.Gurps.Models
             public int CharacterId { get; set; }
 
             public string Name { get; set; }
+
+            public int EarnedCharacterPoints { get; set; }
         }
 
-        public class SlogEntry
+        public class SlogReference
         {
-            public SlogEntry()
-            {
-                CreatedAt = DateTimeOffset.Now;
-            }
-            
-            [CollectionJsonProperty(TemplateValueHandling = TemplateValueHandling.Ignore)]
-            public DateTimeOffset CreatedAt { get; set; }
-            
-            public string AlienDateTime { get; set; }
+            [CollectionJsonReference(typeof(Slog))]
+            public int SlogId { get; set; }
 
-            public UserReference Author { get; set; }
-
-            public string Body { get; set; }
+             
         }
-
-        
     }
 
 

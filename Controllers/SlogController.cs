@@ -2,6 +2,7 @@
 using CollectionJsonExtended.Client;
 using CollectionJsonExtended.Client.Attributes;
 using CollectionJsonExtended.Core;
+using MedienKultur.Gurps.Models;
 using Raven.Client;
 
 namespace MedienKultur.Gurps.Controllers
