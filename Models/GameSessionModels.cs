@@ -100,6 +100,9 @@ namespace MedienKultur.Gurps.Models
     }
 
 
-
+    public class Slog
+    {
+        public string foo { get; set; }
+    }
     
 }
