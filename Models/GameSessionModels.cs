@@ -17,6 +17,7 @@ namespace MedienKultur.Gurps.Models
         public string Name { get; set; }
     }
 
+
     public class Slog
     {
         public int Id { get; set; }
@@ -44,8 +45,6 @@ namespace MedienKultur.Gurps.Models
             public DateTimeOffset PlayedAt { get; set; }
         }
     }
-
-    
 
 
     public class GameSession
