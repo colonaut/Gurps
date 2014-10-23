@@ -200,11 +200,11 @@
                     priority: -800,
                     require: 'inlineInclude',
                     compile: function(element, attr) {
-                        if (!$templateCache.get(attr.modInclude))
-                            $templateCache.put(attr.modInclude, element.html());
+                        if (!$templateCache.get(attr.inlineInclude))
+                            $templateCache.put(attr.inlineInclude, element.html());
 
                         //var contents =
-                        element.contents().remove(); // we need to do this!
+                        //element.contents().remove(); // we need to do this! (?) seems not...
 
                         return function(scope, $element, $attr, ctrl) {
                             $element.html(ctrl.template);
@@ -230,7 +230,7 @@
                                 currentElement,
                                 newScope = scope.$new();
 
-                            ctrl.template = $templateCache.get($attr.modInclude);
+                            ctrl.template = $templateCache.get($attr.inlineInclude);
 
                             var clone = $transclude(newScope, function(clone) {
                                 if (currentScope) {

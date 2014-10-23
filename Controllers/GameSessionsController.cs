@@ -66,7 +66,7 @@ namespace MedienKultur.Gurps.Controllers
         //public CollectionJsonResult<GameSession> ByCharacter(int character)
         //{
         //    var models = _ravenSession.Query<GameSession>()
-        //        .Customize(q => q.WaitForNonStaleResultsAsOfLastWrite())
+        //        .Customize(q => q.WaitForNonStaleResultsAsOfLastWrite())L
         //        .Where(s => s.Characters.Any(c => c.CharacterId == character));
         //    //.AsEnumerable();
         //    return new CollectionJsonResult<GameSession>(models);

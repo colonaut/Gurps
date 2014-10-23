@@ -11,36 +11,56 @@ namespace MedienKultur.Gurps.Models
 
     public class UserReference
     {
+        private UserReference() {}
+        
+        public UserReference(ApplicationUser applicationUser)
+        {
+            Name = applicationUser.UserName;
+            GravatarUrl = applicationUser.GravatarUrl;
+        }
+        
         [CollectionJsonReference(typeof(ApplicationUser))]
-        public int UserId { get; set; }
-
         public string Name { get; set; }
+
+        public string GravatarUrl { get; set; }
     }
 
-
-    public class Slog
-    {
-        public int Id { get; set; }
-
-        public CharacterReference Character { get; set; }
-
-        public GameSessionReference GameSession { get; set; }
-
-        
-        public class CharacterReference
+    public class CharacterReference
         {
+            [CollectionJsonReference(typeof(Character))]
             public int CharacterId { get; set; }
 
             public string Name { get; set; }
+
+            public int EarnedCharacterPoints { get; set; }
         }
+
+
+    public class SlogEntry
+    {
+        public SlogEntry()
+        {
+            CreatedAt = DateTimeOffset.Now;            
+        }
+
+        [CollectionJsonProperty(TemplateValueHandling = TemplateValueHandling.Ignore)]
+        public DateTimeOffset CreatedAt { get; set; }
+
+        public int Id { get; set; }
+
+        [CollectionJsonProperty(TemplateValueHandling = TemplateValueHandling.Ignore)]
+        public UserReference User { get; set; }
+
+        [CollectionJsonProperty(TemplateValueHandling = TemplateValueHandling.Ignore)]
+        public CharacterReference Character { get; set; }
+
+        public string Content { get; set; }
+
 
         public class GameSessionReference
         {
+            [CollectionJsonReference(typeof(GameSession))]
             public int GameSessionId { get; set; }
-
-            public AlienDate BeginAlienDate { get; set; }
-
-            public AlienDate EndAlienDate { get; set; }
 
             public DateTimeOffset PlayedAt { get; set; }
         }
@@ -52,7 +72,7 @@ namespace MedienKultur.Gurps.Models
         public GameSession()
         {
             CreatedAt = DateTimeOffset.Now;
-            Characters = new List<CharacterReference>();
+            Characters = new List<CharacterReference>();            
         }
 
         public int Id { get; set; }
@@ -68,8 +88,6 @@ namespace MedienKultur.Gurps.Models
 
         public IEnumerable<CharacterReference> Characters { get; set; }
 
-        public SlogReference Slog { get; set; }
-
 
         public class GameSettingReference
         {
@@ -78,24 +96,7 @@ namespace MedienKultur.Gurps.Models
 
             public string Name { get; set; }
         }
-
-        public class CharacterReference
-        {
-            [CollectionJsonReference(typeof(Character))]
-            public int CharacterId { get; set; }
-
-            public string Name { get; set; }
-
-            public int EarnedCharacterPoints { get; set; }
-        }
-
-        public class SlogReference
-        {
-            [CollectionJsonReference(typeof(Slog))]
-            public int SlogId { get; set; }
-
-             
-        }
+        
     }
     
 }

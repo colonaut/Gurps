@@ -7,42 +7,60 @@
 
 
 <section collection-json="/api/gamesessions" ng-controller="GameSessionsController" >
-    <h2> Game Sessions from server</h2>
+    <h2>Manage GameSessions</h2>
+    
+    <h4>The template</h4>
+    <div collection-json-template>
+        <p>hallo</p>
+    </div>
+    
     <a href data-ng-click="create()">Add (Editor)</a>
     
-    <div collection-json-template></div>
-
-            
+    <h4>Some GameSessions from server</h4>          
     <ul>
         <li ng-repeat="session in collection.items">
             <p>created: {{session.entity.createdAt}}</p>
 
-            <h3>Angemeldete Charaktere:</h3>
+            <h5>Angemeldete Charaktere:</h5>
             <ul>
                 <li ng-repeat="character in session.entity.characters">
                     
                 </li>
             </ul>
                     
+        </li>
+    </ul>
+</section>
 
-            <h3>Sessionlog</h3>
-            <ul>
-                <li ng-repeat="slogEntry in session.entity.slogEntries">
-                    {{slogEntry.body}} ({{slogEntry.author.name}})
-                </li>
-            </ul>
+
+<section collection-json="api/slogs">
+    <h2>Manage Slogs</h2>
+
+    <h4>The template</h4>
+    <div collection-json-template>
+        <p>hallo slogs entries!</p>
+    </div>
+    
+    <a href data-ng-click="create()">Add (Editor)</a>
+
+    <h4>Some slog entries from server</h4>
+    
+    <ul>
+        <li ng-repeat="slog in collection.items" style="min-height:30px; padding-left:32px; background: url({{slog.entity.user.gravatarUrl}}?r=x&size=30) no-repeat;">
+            <span>{{slog.entity.user.name}} authored on {{slog.entity.createdAt | date}}</span>
+            <div>
+                {{slog.entity.content}}
+            </div>
         </li>
     </ul>
     
-
-
 </section>
 
 
 
 <section collection-json="api/characters">
 
-    <h2>Characters</h2>
+    <h2>Manage Characters</h2>
         
     <ul ng-controller="PlayerCharactersController">
         <li ng-repeat="character in collection.items">
