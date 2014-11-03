@@ -1,10 +1,11 @@
 ﻿using System;
 using System.Collections.Generic;
+using CollectionJsonExtended.Core;
 
 namespace MedienKultur.Gurps.Models
 {
 
-    public abstract class Character
+    public abstract class Character : INamedDocument
     {
         public int Id { get; set; } //is primary key, but we also set it, when we send data to the server ans want to check the id...
         public string Name { get; set; }

@@ -1,13 +1,20 @@
 ﻿using System;
 using System.Collections.Generic;
+using CollectionJsonExtended.Core;
 using CollectionJsonExtended.Core.Attributes;
-using MedienKultur.Gurps.Models.Extensions;
-using Microsoft.WindowsAzure.Storage.Blob.Protocol;
-using Newtonsoft.Json;
+using Raven.Client;
 
 namespace MedienKultur.Gurps.Models
 {
-    
+
+    public static class IDocumentSessionExtensions
+    {
+        public static T Load<T>(this IDocumentSession session, DenormalizedReference<T> reference)
+            where T : INamedDocument
+        {
+            return session.Load<T>(reference.Id);
+        }
+    }
 
     public class UserReference
     {
@@ -28,11 +35,9 @@ namespace MedienKultur.Gurps.Models
     public class CharacterReference
         {
             [CollectionJsonReference(typeof(Character))]
-            public int CharacterId { get; set; }
+            public int Id { get; set; }
 
             public string Name { get; set; }
-
-            public int EarnedCharacterPoints { get; set; }
         }
 
 
@@ -52,7 +57,7 @@ namespace MedienKultur.Gurps.Models
         public UserReference User { get; set; }
 
         [CollectionJsonProperty(TemplateValueHandling = TemplateValueHandling.Ignore)]
-        public CharacterReference Character { get; set; }
+        public DenormalizedReference<Character> Character { get; set; }
 
         public string Content { get; set; }
 
