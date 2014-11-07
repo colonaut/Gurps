@@ -10,7 +10,7 @@ namespace MedienKultur.Gurps.Models
     public static class IDocumentSessionExtensions
     {
         public static T Load<T>(this IDocumentSession session, DenormalizedReference<T> reference)
-            where T : INamedDocument
+            where T : IDenormalizedReference
         {
             return session.Load<T>(reference.Id);
         }
@@ -77,7 +77,7 @@ namespace MedienKultur.Gurps.Models
         public GameSession()
         {
             CreatedAt = DateTimeOffset.Now;
-            Characters = new List<CharacterReference>();            
+            Characters = new List<DenormalizedReference<GurpsCharacter>>();            
         }
 
         public int Id { get; set; }
@@ -89,9 +89,12 @@ namespace MedienKultur.Gurps.Models
 
         public GameSettingReference Setting { get; set; }
 
+        
         public CharacterReference GameMaster { get; set; }
 
-        public IEnumerable<CharacterReference> Characters { get; set; }
+        public DenormalizedReference<GurpsCharacter> DGurpsCharacter { get; set; } 
+
+        public IEnumerable<DenormalizedReference<GurpsCharacter>> Characters { get; set; }
 
 
         public class GameSettingReference
