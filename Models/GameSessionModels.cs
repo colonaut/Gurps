@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.EnterpriseServices.Internal;
 using CollectionJsonExtended.Core;
 using CollectionJsonExtended.Core.Attributes;
 using Raven.Client;
@@ -40,6 +41,21 @@ namespace MedienKultur.Gurps.Models
             public string Name { get; set; }
         }
 
+    public class DenormalizedGurpsCharacter : DenormalizedReference<GurpsCharacter>
+    {
+        //public int Id { get; set; }
+        //public string Name { get; set; }
+
+        public static implicit operator DenormalizedGurpsCharacter(GurpsCharacter character)
+        {
+            return new DenormalizedGurpsCharacter
+            {
+                Id = character.Id,
+                Name = character.Name
+                
+            };
+        }
+    }
 
     public class SlogEntry
     {
@@ -92,7 +108,9 @@ namespace MedienKultur.Gurps.Models
         
         public CharacterReference GameMaster { get; set; }
 
-        public DenormalizedReference<GurpsCharacter> DGurpsCharacter { get; set; } 
+        public DenormalizedReference<GurpsCharacter> DRGurpsCharacter { get; set; }
+
+        public DenormalizedGurpsCharacter DCGurpsCharacter { get; set; }
 
         public IEnumerable<DenormalizedReference<GurpsCharacter>> Characters { get; set; }
 
